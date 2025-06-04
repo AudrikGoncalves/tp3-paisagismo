@@ -78,10 +78,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Adicionada transição de sombra */
         }
         .image-placeholder-container:hover {
             transform: scale(1.03);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1); /* Sombra sutil no hover */
         }
         .image-placeholder-container img {
             position: absolute;
@@ -90,6 +91,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover; 
+        }
+        /* Para links de imagem Fancybox */
+        a[data-fancybox] .image-placeholder-container:hover {
+             box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); /* Sombra verde no hover para links Fancybox */
         }
         .section-title {
             font-size: 2.5rem; 
@@ -109,7 +114,7 @@
         .card {
             background-color: white;
             border-radius: 0.75rem; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03); /* Sombra mais sutil */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03); 
             overflow: hidden;
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
@@ -130,7 +135,7 @@
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
         .header-scrolled {
-            background-color: rgba(255, 255, 255, 0.9); /* Branco com mais opacidade */
+            background-color: rgba(255, 255, 255, 0.9); 
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             box-shadow: 0 2px 10px rgba(0,0,0,0.07);
@@ -177,6 +182,7 @@
             padding: 10px 0;
             font-size: 0.9em;
             color: #f0f0f0;
+            background-color: rgba(0,0,0,0.7);
         }
     </style>
 </head>
@@ -191,12 +197,12 @@
             <nav class="hidden md:flex">
                 <ul class="flex space-x-6"> 
                     <li><a href="#hero" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Início</a></li>
+                    <li><a href="#autor" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Autor</a></li> 
                     <li><a href="#memorial" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Memorial</a></li>
                     <li><a href="#implantacao" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Implantação</a></li>
                     <li><a href="#plantas" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Plantas</a></li>
                     <li><a href="#cortes" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Cortes</a></li>
                     <li><a href="#perspectivas" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Perspectivas</a></li>
-                    <li><a href="#autor" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Autor</a></li>
                     <li><a href="#mapa-campus" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Mapa</a></li>
                     <li><a href="#downloads" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Downloads</a></li>
                 </ul>
@@ -214,12 +220,12 @@
         <!-- Menu Mobile (Dropdown) -->
         <div id="mobileMenu" class="md:hidden hidden bg-white shadow-lg rounded-b-lg mx-2">
             <a href="#hero" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Início</a>
+            <a href="#autor" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Autor</a> 
             <a href="#memorial" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Memorial</a>
             <a href="#implantacao" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Implantação</a>
             <a href="#plantas" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Plantas</a>
             <a href="#cortes" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Cortes</a>
             <a href="#perspectivas" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Perspectivas</a>
-            <a href="#autor" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Autor</a>
             <a href="#mapa-campus" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Mapa Interativo</a>
             <a href="#downloads" class="block nav-link-mobile text-gray-700 hover:bg-emerald-50 px-4 py-3 transition-colors duration-300">Downloads</a>
         </div>
@@ -235,10 +241,30 @@
                 <p class="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto">
                     Um projeto paisagístico inovador para transformar o ambiente acadêmico em um oásis de bem-estar, aprendizado e sustentabilidade.
                 </p>
-                <a href="#memorial" 
-                   class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-10 rounded-lg shadow-lg text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
-                    Explore o Projeto
+                <a href="#autor"  class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-10 rounded-lg shadow-lg text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
+                    Conheça o Projeto
                 </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Seção Autor (Movida para cá) -->
+    <section id="autor" class="content-section py-16 lg:py-24 bg-gray-50"> 
+        <div class="animate-on-scroll">
+            <h2 class="section-title text-center mb-12">Autor do Projeto</h2>
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="image-placeholder-container mx-auto rounded-full shadow-lg" style="width: 180px; height: 180px; padding-bottom: 0;">
+                     <img src="https://placehold.co/180x180/A7F3D0/1E40AF?text=Foto+do+Autor" 
+                         alt="[Foto do Autor do Projeto]"
+                         class="rounded-full object-cover"
+                         onerror="this.src='https://placehold.co/180x180/E0E0E0/B0B0B0?text=Foto'; this.alt='Erro ao carregar foto do autor';">
+                </div>
+                <h3 class="text-2xl font-semibold text-emerald-700 mt-6 mb-2 placeholder-text">[Nome Completo do Autor(a) ou Nome da Equipe]</h3>
+                <p class="text-lg text-gray-600 mb-1 placeholder-text">[Curso/Titulação - Ex: Estudante de Arquitetura e Urbanismo]</p>
+                <p class="text-md text-gray-500 mb-4 placeholder-text">[Instituição de Ensino - Ex: Universidade Federal Exemplo]</p>
+                <p class="text-gray-600 leading-relaxed max-w-xl mx-auto placeholder-text">
+                    [Uma breve descrição sobre o autor(a)/equipe, sua paixão por paisagismo biofílico, e a motivação por trás deste projeto. Se for equipe, liste os membros e suas principais contribuições. Fale sobre a visão do projeto e o impacto que se espera alcançar no campus.]
+                </p>
             </div>
         </div>
     </section>
@@ -347,12 +373,16 @@
              <div class="animate-on-scroll">
                 <h2 class="section-title text-center mb-12">Implantação Geral</h2>
                 <p class="text-lg text-gray-600 leading-relaxed mb-10 max-w-3xl mx-auto text-center placeholder-text">[Visão geral da distribuição espacial do projeto no campus, destacando a setorização, os principais eixos de circulação e a relação com o entorno construído e natural existente.]</p>
-                <div class="image-placeholder-container mx-auto max-w-5xl shadow-lg">
-                    <img src="https://placehold.co/1200x800/A7F3D0/1E40AF?text=Implanta%C3%A7%C3%A3o+Geral+Ampla" 
-                         alt="[Imagem da Implantação Geral do Campus Biofílico]"
-                         onerror="this.src='https://placehold.co/1200x800/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem da implantação geral';">
-                </div>
-                <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Implantação Geral do Projeto Campus Biofílico, indicando Norte, acessos principais e áreas de intervenção. Substitua pela sua imagem.]</p>
+                <a href="https://placehold.co/1200x800/A7F3D0/1E40AF?text=Implanta%C3%A7%C3%A3o+Geral+Ampla" 
+                   data-fancybox="implantacao" 
+                   data-caption="Implantação Geral do Projeto Campus Biofílico, indicando Norte, acessos principais e áreas de intervenção.">
+                    <div class="image-placeholder-container mx-auto max-w-5xl shadow-lg">
+                        <img src="https://placehold.co/1200x800/A7F3D0/1E40AF?text=Implanta%C3%A7%C3%A3o+Geral+Ampla" 
+                             alt="[Imagem da Implantação Geral do Campus Biofílico]"
+                             onerror="this.src='https://placehold.co/1200x800/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem da implantação geral';">
+                    </div>
+                </a>
+                <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Implantação Geral. Clique na imagem para ampliar. Substitua pela sua imagem.]</p>
             </div>
         </section>
 
@@ -364,21 +394,29 @@
             
                 <div class="mb-16 animate-on-scroll">
                     <h3 class="section-subtitle text-center">Planta Ampliada - Praça Central Biofílica</h3>
-                    <div class="image-placeholder-container mx-auto max-w-4xl shadow-lg">
-                        <img src="https://placehold.co/1000x750/A7F3D0/1E40AF?text=Planta+Ampliada+-+Pra%C3%A7a+Central" 
-                             alt="[Imagem da Planta Ampliada da Praça Central Biofílica]"
-                             onerror="this.src='https://placehold.co/1000x750/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem da planta ampliada da Praça Central';">
-                    </div>
-                    <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Planta baixa da Praça Central, escala 1:100, com indicação de espécies vegetais, mobiliário e paginação de piso. Substitua pela sua imagem.]</p>
+                    <a href="https://placehold.co/1000x750/A7F3D0/1E40AF?text=Planta+Ampliada+-+Pra%C3%A7a+Central"
+                       data-fancybox="plantas"
+                       data-caption="Planta baixa da Praça Central, escala 1:100, com indicação de espécies vegetais, mobiliário e paginação de piso.">
+                        <div class="image-placeholder-container mx-auto max-w-4xl shadow-lg">
+                            <img src="https://placehold.co/1000x750/A7F3D0/1E40AF?text=Planta+Ampliada+-+Pra%C3%A7a+Central" 
+                                 alt="[Imagem da Planta Ampliada da Praça Central Biofílica]"
+                                 onerror="this.src='https://placehold.co/1000x750/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem da planta ampliada da Praça Central';">
+                        </div>
+                    </a>
+                    <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Planta Ampliada da Praça Central. Clique na imagem para ampliar. Substitua pela sua imagem.]</p>
                 </div>
                  <div class="animate-on-scroll">
                     <h3 class="section-subtitle text-center">Detalhe Construtivo - Banco Integrado</h3>
-                    <div class="image-placeholder-container mx-auto max-w-3xl shadow-lg" style="padding-bottom: 75%;"> {/* Ajuste de aspect ratio para detalhe */}
-                        <img src="https://placehold.co/800x600/CCFBF1/0C4A6E?text=Detalhe+Construtivo+-+Banco" 
-                             alt="[Imagem do Detalhe Construtivo do Banco Integrado]"
-                             onerror="this.src='https://placehold.co/800x600/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem do detalhe construtivo do banco';">
-                    </div>
-                    <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Detalhe construtivo do banco integrado à vegetação, escala 1:20. Substitua pela sua imagem.]</p>
+                    <a href="https://placehold.co/800x600/CCFBF1/0C4A6E?text=Detalhe+Construtivo+-+Banco"
+                       data-fancybox="plantas"
+                       data-caption="Detalhe construtivo do banco integrado à vegetação, escala 1:20.">
+                        <div class="image-placeholder-container mx-auto max-w-3xl shadow-lg" style="padding-bottom: 75%;">
+                            <img src="https://placehold.co/800x600/CCFBF1/0C4A6E?text=Detalhe+Construtivo+-+Banco" 
+                                 alt="[Imagem do Detalhe Construtivo do Banco Integrado]"
+                                 onerror="this.src='https://placehold.co/800x600/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem do detalhe construtivo do banco';">
+                        </div>
+                    </a>
+                    <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Detalhe Construtivo do Banco. Clique na imagem para ampliar. Substitua pela sua imagem.]</p>
                 </div>
             </div>
         </section>
@@ -392,21 +430,29 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
                     <div class="animate-on-scroll">
                         <h3 class="section-subtitle text-center">Corte Longitudinal AA'</h3>
-                        <div class="image-placeholder-container shadow-lg" style="padding-bottom: 50%;"> {/* Aspect ratio para corte mais comprido */}
-                            <img src="https://placehold.co/1000x500/A7F3D0/1E40AF?text=Corte+Longitudinal+AA'" 
-                                 alt="[Imagem do Corte Longitudinal AA']"
-                                 onerror="this.src='https://placehold.co/1000x500/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem do Corte AA\'';">
-                        </div>
-                        <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Corte Longitudinal AA' atravessando a Praça Central e o Bosque de Contemplação. Substitua pela sua imagem.]</p>
+                        <a href="https://placehold.co/1000x500/A7F3D0/1E40AF?text=Corte+Longitudinal+AA'"
+                           data-fancybox="cortes"
+                           data-caption="Corte Longitudinal AA' atravessando a Praça Central e o Bosque de Contemplação.">
+                            <div class="image-placeholder-container shadow-lg" style="padding-bottom: 50%;">
+                                <img src="https://placehold.co/1000x500/A7F3D0/1E40AF?text=Corte+Longitudinal+AA'" 
+                                     alt="[Imagem do Corte Longitudinal AA']"
+                                     onerror="this.src='https://placehold.co/1000x500/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem do Corte AA\'';">
+                            </div>
+                        </a>
+                        <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Corte Longitudinal AA'. Clique na imagem para ampliar. Substitua pela sua imagem.]</p>
                     </div>
                     <div class="animate-on-scroll">
                         <h3 class="section-subtitle text-center">Corte Transversal BB' - Detalhe Talude Verde</h3>
-                         <div class="image-placeholder-container shadow-lg" style="padding-bottom: 75%;">
-                            <img src="https://placehold.co/800x600/A7F3D0/1E40AF?text=Corte+Transversal+BB'" 
-                                 alt="[Imagem do Corte Transversal BB']"
-                                 onerror="this.src='https://placehold.co/800x600/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem do Corte BB\'';">
-                        </div>
-                        <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Corte Transversal BB' com detalhe da solução para o talude verde e sistema de drenagem. Substitua pela sua imagem.]</p>
+                        <a href="https://placehold.co/800x600/A7F3D0/1E40AF?text=Corte+Transversal+BB'"
+                           data-fancybox="cortes"
+                           data-caption="Corte Transversal BB' com detalhe da solução para o talude verde e sistema de drenagem.">
+                             <div class="image-placeholder-container shadow-lg" style="padding-bottom: 75%;">
+                                <img src="https://placehold.co/800x600/A7F3D0/1E40AF?text=Corte+Transversal+BB'" 
+                                     alt="[Imagem do Corte Transversal BB']"
+                                     onerror="this.src='https://placehold.co/800x600/E0E0E0/B0B0B0?text=Erro+ao+carregar+imagem'; this.alt='Erro ao carregar imagem do Corte BB\'';">
+                            </div>
+                        </a>
+                        <p class="text-sm text-gray-500 mt-6 text-center placeholder-text">[Legenda: Corte Transversal BB'. Clique na imagem para ampliar. Substitua pela sua imagem.]</p>
                     </div>
                 </div>
             </div>
@@ -420,7 +466,7 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
                     <div class="card animate-on-scroll">
-                        <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Conviv%C3%AAncia+Detalhada" data-fancybox="gallery" data-caption="Perspectiva da Área de Convivência - Campus Biofílico. Materiais naturais e vegetação exuberante convidam ao relaxamento e interação.">
+                        <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Conviv%C3%AAncia+Detalhada" data-fancybox="gallery-perspectivas" data-caption="Perspectiva da Área de Convivência - Campus Biofílico. Materiais naturais e vegetação exuberante convidam ao relaxamento e interação.">
                             <div class="image-placeholder-container" style="padding-bottom: 75%;">
                                 <img src="https://placehold.co/600x450/A7F3D0/1E40AF?text=Perspectiva+Conviv%C3%AAncia" 
                                      alt="[Imagem da Perspectiva da Área de Convivência]"
@@ -433,7 +479,7 @@
                         </div>
                     </div>
                     <div class="card animate-on-scroll" style="animation-delay: 0.15s;">
-                         <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Jardim+Sensorial+Detalhada" data-fancybox="gallery" data-caption="Jardim Sensorial - Campus Biofílico. Um percurso entre texturas, aromas e cores da flora nativa, estimulando os sentidos.">
+                         <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Jardim+Sensorial+Detalhada" data-fancybox="gallery-perspectivas" data-caption="Jardim Sensorial - Campus Biofílico. Um percurso entre texturas, aromas e cores da flora nativa, estimulando os sentidos.">
                             <div class="image-placeholder-container" style="padding-bottom: 75%;">
                                 <img src="https://placehold.co/600x450/A7F3D0/1E40AF?text=Perspectiva+Jardim+Sensorial" 
                                      alt="[Imagem da Perspectiva do Jardim Sensorial]"
@@ -446,7 +492,7 @@
                         </div>
                     </div>
                     <div class="card animate-on-scroll" style="animation-delay: 0.3s;">
-                        <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Estudo+Ar+Livre+Detalhada" data-fancybox="gallery" data-caption="Espaço de Estudo ao Ar Livre - Campus Biofílico. Mobiliário confortável sob a sombra de árvores nativas, com pontos de energia e Wi-Fi.">
+                        <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Estudo+Ar+Livre+Detalhada" data-fancybox="gallery-perspectivas" data-caption="Espaço de Estudo ao Ar Livre - Campus Biofílico. Mobiliário confortável sob a sombra de árvores nativas, com pontos de energia e Wi-Fi.">
                             <div class="image-placeholder-container" style="padding-bottom: 75%;">
                                 <img src="https://placehold.co/600x450/A7F3D0/1E40AF?text=Perspectiva+Estudo+Ar+Livre" 
                                      alt="[Imagem da Perspectiva do Espaço de Estudo ao Ar Livre]"
@@ -458,27 +504,6 @@
                             <p class="text-gray-600 text-sm placeholder-text">[Nicho de tranquilidade para estudo individual ou em pequenos grupos, com mesas, bancos e tomadas, envolvido por vegetação densa.]</p>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção Autor -->
-        <section id="autor" class="content-section py-16 lg:py-24 bg-white rounded-2xl shadow-xl my-16">
-            <div class="animate-on-scroll">
-                <h2 class="section-title text-center mb-12">Autor(es) do Projeto</h2>
-                <div class="max-w-3xl mx-auto text-center">
-                    <div class="image-placeholder-container mx-auto rounded-full shadow-lg" style="width: 180px; height: 180px; padding-bottom: 0;">
-                         <img src="https://placehold.co/180x180/A7F3D0/1E40AF?text=Foto+do+Autor" 
-                             alt="[Foto do Autor(a) do Projeto]"
-                             class="rounded-full"
-                             onerror="this.src='https://placehold.co/180x180/E0E0E0/B0B0B0?text=Foto'; this.alt='Erro ao carregar foto do autor';">
-                    </div>
-                    <h3 class="text-2xl font-semibold text-emerald-700 mt-6 mb-2 placeholder-text">[Nome Completo do Autor(a) ou Nome da Equipe]</h3>
-                    <p class="text-lg text-gray-600 mb-1 placeholder-text">[Curso/Titulação - Ex: Estudante de Arquitetura e Urbanismo]</p>
-                    <p class="text-md text-gray-500 mb-4 placeholder-text">[Instituição de Ensino - Ex: Universidade Federal Exemplo]</p>
-                    <p class="text-gray-600 leading-relaxed max-w-xl mx-auto placeholder-text">
-                        [Uma breve descrição sobre o autor(a)/equipe, sua paixão por paisagismo biofílico, e a motivação por trás deste projeto. Se for equipe, liste os membros e suas principais contribuições.]
-                    </p>
                 </div>
             </div>
         </section>
@@ -536,7 +561,7 @@
     </main>
 
     <!-- Rodapé Simplificado -->
-    <footer class="bg-gray-800 text-gray-400 py-12"> {/* Cor de texto do rodapé ajustada para melhor contraste */}
+    <footer class="bg-gray-800 text-gray-400 py-12"> 
         <div class="container mx-auto px-6 text-center">
             <div class="animate-on-scroll">
                 <a href="#hero" class="text-3xl font-bold text-emerald-500 hover:text-emerald-400 transition-colors duration-300 mb-4 inline-block">Campus Biofílico</a>
@@ -555,10 +580,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
     <script>
         // Inicialização do Fancybox
-        Fancybox.bind("[data-fancybox]", {
+        Fancybox.bind("[data-fancybox]", { // Seletor genérico para todos os links com data-fancybox
           Thumbs: false, 
           Toolbar: { 
-            display: { // CORREÇÃO APLICADA AQUI
+            display: { 
                 left: [],
                 middle: [],
                 right: [
@@ -606,7 +631,6 @@
             function onScroll() {
                 let currentSectionId = 'hero'; 
                 const headerHeight = header.offsetHeight;
-                // Ajuste para considerar o header fixo e dar uma margem para a ativação
                 const scrollPosition = window.scrollY + headerHeight + 50; 
 
                 const heroSection = document.getElementById('hero');
@@ -630,9 +654,8 @@
                 }
                 
                 allNavLinks.forEach(link => {
-                    link.classList.remove('tab-active'); // Remove de todos
-                    // Para o menu desktop, o destaque é com a classe .tab-active
-                    if (link.closest('nav') && link.getAttribute('href') === '#' + currentSectionId) {
+                    link.classList.remove('tab-active'); 
+                    if (link.closest('nav') && link.getAttribute('href') === '#' + currentSectionId) { // Apenas para menu desktop
                         link.classList.add('tab-active');
                     }
                 });

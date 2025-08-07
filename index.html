@@ -26,9 +26,6 @@
         }
 
         /* Chave para o novo layout: posicionamento absoluto dentro de colunas relativas */
-        .day-column {
-            position: relative;
-        }
         .schedule-item {
             position: absolute;
             /* Deixa uma pequena margem para não colar nas bordas */
@@ -161,17 +158,17 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const defaultSchedule = [
-        { id: 'proj-vertical-sch', linkedId: 'proj-vertical', day: 2, start: 8, span: 5, time: '13:30-18:00' },
-        { id: 'proj-metalicas-sch', linkedId: 'proj-metalicas', day: 3, start: 8, span: 4, time: '13:30-17:00' },
-        { id: 'plan-urbano-sch', linkedId: 'plan-urbano', day: 1, start: 8, span: 4, time: '13:30-17:00' },
-        { id: 'estagio-sch', linkedId: 'estagio', day: 3, start: 12, span: 2, time: '17:10-18:50' },
-        { id: 'mec-solos-sch', linkedId: 'mec-solos', day: 5, start: 3, span: 4, time: '08:50-12:20' },
-        { id: 'mec-solidos-sch', linkedId: 'mec-solidos', day: 3, start: 2, span: 3, time: '07:50-10:30' },
-        { id: 'materiais-const-sch', linkedId: 'materiais-const', day: 1, start: 3, span: 4, time: '08:50-12:20' },
-        { id: 'calculo-3-sch1', linkedId: 'calculo-3', day: 2, start: 3, span: 2, time: '08:50-10:30' },
-        { id: 'calculo-3-sch2', linkedId: 'calculo-3', day: 4, start: 3, span: 2, time: '08:50-10:30' },
-        { id: 'geotecnia-sch', linkedId: 'geotecnia', day: 1, start: 12, span: 2, time: '17:10-18:50' },
-        { id: 'quimica-sch', linkedId: 'quimica', day: 3, start: 15, span: 2, time: '20:50-22:30' },
+        { id: 'proj-vertical-sch', linkedId: 'proj-vertical', day: 2, time: '13:30-18:00' },
+        { id: 'proj-metalicas-sch', linkedId: 'proj-metalicas', day: 3, time: '13:30-17:00' },
+        { id: 'plan-urbano-sch', linkedId: 'plan-urbano', day: 1, time: '13:30-17:00' },
+        { id: 'estagio-sch', linkedId: 'estagio', day: 3, time: '17:10-18:50' },
+        { id: 'mec-solos-sch', linkedId: 'mec-solos', day: 5, time: '08:50-12:20' },
+        { id: 'mec-solidos-sch', linkedId: 'mec-solidos', day: 3, time: '07:50-10:30' },
+        { id: 'materiais-const-sch', linkedId: 'materiais-const', day: 1, time: '08:50-12:20' },
+        { id: 'calculo-3-sch1', linkedId: 'calculo-3', day: 2, time: '08:50-10:30' },
+        { id: 'calculo-3-sch2', linkedId: 'calculo-3', day: 4, time: '08:50-10:30' },
+        { id: 'geotecnia-sch', linkedId: 'geotecnia', day: 1, time: '17:10-18:50' },
+        { id: 'quimica-sch', linkedId: 'quimica', day: 3, time: '20:50-22:30' },
     ];
 
 
@@ -203,33 +200,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNÇÕES DE RENDERIZAÇÃO ---
     
     /**
-     * **NOVA LÓGICA DE LAYOUT**
+     * **LÓGICA DE LAYOUT ATUALIZADA**
      * Renderiza a grelha de horários, calculando dinamicamente a posição e largura dos eventos para evitar sobreposição.
+     * Alinha perfeitamente os eventos com as linhas de tempo.
      */
     function renderSchedule() {
         scheduleGrid.innerHTML = ''; 
         
-        // 1. Renderiza Cabeçalho e Coluna de Horas
+        // 1. Renderiza Cabeçalho
         const headerCells = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
         scheduleGrid.insertAdjacentHTML('beforeend', '<div></div>'); // Canto
         headerCells.forEach(day => {
             scheduleGrid.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-slate-700 py-2 text-sm sm:text-base">${day}</div>`);
         });
 
-        // 2. Cria as colunas dos dias e as linhas de tempo
+        // 2. Renderiza a Coluna de Horas com alinhamento preciso
         const timeColumn = document.createElement('div');
-        timeColumn.style.gridRow = '2 / span 32';
+        timeColumn.style.gridRow = '2 / span 1';
+        timeColumn.style.gridColumn = '1 / span 1';
+        timeColumn.className = 'relative';
+        
         for (let i = 7; i <= 22; i++) {
-            timeColumn.insertAdjacentHTML('beforeend', `<div class="text-right text-xs text-slate-400 pr-2 sm:pr-4 h-[50px] -mt-2">${i}:00</div>`);
+            const hourLabel = document.createElement('div');
+            hourLabel.className = 'text-right text-xs text-slate-400 pr-2 sm:pr-4 absolute w-full';
+            // Posiciona o rótulo. (i - 7) * 50px é a posição da linha. -7px é para centrar o texto na linha.
+            hourLabel.style.top = `${(i - 7) * 50 - 7}px`; 
+            hourLabel.textContent = `${i}:00`;
+            timeColumn.appendChild(hourLabel);
         }
         scheduleGrid.appendChild(timeColumn);
 
+        // 3. Cria as colunas dos dias e as linhas de fundo
         const dayColumns = [];
         for (let i = 1; i <= 5; i++) {
             const dayColumn = document.createElement('div');
-            dayColumn.className = 'day-column border-t border-slate-200';
+            dayColumn.className = 'relative'; // O contentor para os eventos
             dayColumn.style.gridColumn = i + 1;
-            dayColumn.style.gridRow = '2 / span 32';
+            dayColumn.style.gridRow = '2 / span 1';
+            
             // Adiciona linhas de fundo para cada hora
             for (let j = 7; j < 22; j++) {
                 dayColumn.insertAdjacentHTML('beforeend', `<div class="h-[50px] border-b border-slate-200"></div>`);
@@ -238,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dayColumns.push(dayColumn);
         }
 
-        // 3. Processa e posiciona os eventos para cada dia
+        // 4. Processa e posiciona os eventos para cada dia
         for (let day = 1; day <= 5; day++) {
             const itemsToday = appState.schedule
                 .filter(item => item.day === day)
@@ -247,7 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (itemsToday.length === 0) continue;
 
-            // Agrupa eventos que se sobrepõem
             const groups = [];
             let lastGroup = null;
             for (const item of itemsToday) {
@@ -260,7 +267,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // Calcula o layout para cada grupo
             for (const group of groups) {
                 const columns = [];
                 group.items.sort((a, b) => a.startMinutes - b.startMinutes);
@@ -280,7 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 
-                // Renderiza os itens do grupo com a largura e posição corretas
                 const totalCols = columns.length;
                 for (const item of group.items) {
                     const subject = appState.subjects.find(s => s.id === item.linkedId);
@@ -289,8 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const details = courseDetails[subject.course];
                     const itemDiv = document.createElement('div');
                     
-                    const top = (item.startMinutes - 7 * 60) * (50 / 60); // 50px por 60 min
-                    const height = (item.endMinutes - item.startMinutes) * (50 / 60);
+                    const PIXELS_PER_HOUR = 50;
+                    const pixelsPerMinute = PIXELS_PER_HOUR / 60;
+                    const top = (item.startMinutes - 7 * 60) * pixelsPerMinute;
+                    const height = (item.endMinutes - item.startMinutes) * pixelsPerMinute;
                     const width = 100 / totalCols;
                     const left = item.colIndex * width;
 
@@ -386,13 +393,8 @@ document.addEventListener('DOMContentLoaded', () => {
         itemModal.showModal();
     }
     
-    function timeToRow(timeStr) {
-        if (!timeStr) return 0;
-        const [hours, minutes] = timeStr.split(':').map(Number);
-        return (hours - 7) * 2 + (minutes / 30) + 2;
-    }
-
     function timeToMinutes(timeStr) {
+        if (!timeStr) return 0;
         const [hours, minutes] = timeStr.split(':').map(Number);
         return hours * 60 + minutes;
     }
@@ -423,15 +425,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (scheduleFields.style.display !== 'none' && startTime && endTime) {
-            const startRow = timeToRow(startTime);
-            const endRow = timeToRow(endTime);
-            if (endRow > startRow) {
+            if (timeToMinutes(startTime) < timeToMinutes(endTime)) {
                 appState.schedule.push({
                     id: `sch-${Date.now()}`,
                     linkedId: id,
                     day: parseInt(document.getElementById('item-day').value),
-                    start: startRow,
-                    span: endRow - startRow,
                     time: `${startTime}-${endTime}`
                 });
             }

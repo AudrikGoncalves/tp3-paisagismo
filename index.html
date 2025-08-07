@@ -14,10 +14,28 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        /* Estilos para o modal e animações */
+        
         dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
-        .schedule-item:hover .delete-btn { opacity: 1; }
-        .delete-btn { opacity: 0; transition: opacity 0.2s ease-in-out; }
+        
+        .schedule-item .delete-btn {
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .schedule-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        /* Chave para o novo layout: posicionamento absoluto dentro de colunas relativas */
+        .day-column {
+            position: relative;
+        }
+        .schedule-item {
+            position: absolute;
+            /* Deixa uma pequena margem para não colar nas bordas */
+            width: calc(100% - 4px);
+            left: 2px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 p-4 sm:p-6 md:p-8">
@@ -36,7 +54,7 @@
 
         <!-- Grelha Principal de Horários -->
         <div class="bg-white p-4 rounded-2xl shadow-lg relative">
-            <div id="schedule-grid" class="grid grid-cols-[auto_repeat(5,_1fr)] gap-1 sm:gap-2" style="grid-template-rows: auto repeat(16, minmax(50px, 1fr));">
+            <div id="schedule-grid" class="grid grid-cols-[auto_repeat(5,_1fr)] gap-1 sm:gap-2">
                 <!-- Conteúdo da grelha será gerado por JS -->
             </div>
             <button id="add-schedule-item-btn" class="absolute top-4 right-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-md">
@@ -128,33 +146,25 @@ document.addEventListener('DOMContentLoaded', () => {
         personal: { name: 'Pessoal / Estudo', color: 'amber', textColor: 'text-amber-800', bgColor: 'bg-amber-200', borderColor: 'border-amber-300', progressColor: 'bg-amber-500' }
     };
     
-    // Dados padrão completos
+    // Dados padrão
     const defaultSubjects = [
         { id: 'proj-vertical', name: 'Projeto de Edifício Vertical', course: 'arq', score: 85 },
         { id: 'proj-metalicas', name: 'Projeto em Estruturas Metálicas', course: 'arq', score: 65 },
         { id: 'plan-urbano', name: 'Planeamento Urbano e Regional', course: 'arq', score: 50 },
         { id: 'estagio', name: 'Estágio Obrigatório', course: 'arq', score: 100 },
-        { id: 'teoria-arq', name: 'Teoria da Arquitetura', course: 'arq', score: 75 },
-        { id: 'gestao-redes', name: 'Gestão de Redes e Mídias Sociais', course: 'arq', score: 90 },
         { id: 'mec-solos', name: 'Mecânica dos Solos Aplicada', course: 'eng', score: 70 },
         { id: 'mec-solidos', name: 'Mecânica dos Sólidos II', course: 'eng', score: 55 },
         { id: 'materiais-const', name: 'Materiais de Construção Civil I', course: 'eng', score: 80 },
         { id: 'calculo-3', name: 'Cálculo Aplicado III', course: 'eng', score: 95 },
         { id: 'geotecnia', name: 'Geotecnia', course: 'eng', score: 40 },
         { id: 'quimica', name: 'Química', course: 'eng', score: 88 },
-        { id: 'estatistica', name: 'Estatística', course: 'eng', score: 60 },
-        { id: 'negociacao', name: 'Negociação e Tomada de Decisão', course: 'eng', score: 98 },
     ];
 
     const defaultSchedule = [
-        // Arquitetura
         { id: 'proj-vertical-sch', linkedId: 'proj-vertical', day: 2, start: 8, span: 5, time: '13:30-18:00' },
         { id: 'proj-metalicas-sch', linkedId: 'proj-metalicas', day: 3, start: 8, span: 4, time: '13:30-17:00' },
         { id: 'plan-urbano-sch', linkedId: 'plan-urbano', day: 1, start: 8, span: 4, time: '13:30-17:00' },
         { id: 'estagio-sch', linkedId: 'estagio', day: 3, start: 12, span: 2, time: '17:10-18:50' },
-        { id: 'teoria-arq-sch', linkedId: 'teoria-arq', day: 4, start: 12, span: 2, time: '17:10-18:50' },
-        { id: 'gestao-redes-sch', linkedId: 'gestao-redes', day: 5, start: 14, span: 2, time: '19:00-20:40' },
-        // Engenharia
         { id: 'mec-solos-sch', linkedId: 'mec-solos', day: 5, start: 3, span: 4, time: '08:50-12:20' },
         { id: 'mec-solidos-sch', linkedId: 'mec-solidos', day: 3, start: 2, span: 3, time: '07:50-10:30' },
         { id: 'materiais-const-sch', linkedId: 'materiais-const', day: 1, start: 3, span: 4, time: '08:50-12:20' },
@@ -162,8 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'calculo-3-sch2', linkedId: 'calculo-3', day: 4, start: 3, span: 2, time: '08:50-10:30' },
         { id: 'geotecnia-sch', linkedId: 'geotecnia', day: 1, start: 12, span: 2, time: '17:10-18:50' },
         { id: 'quimica-sch', linkedId: 'quimica', day: 3, start: 15, span: 2, time: '20:50-22:30' },
-        { id: 'estatistica-sch', linkedId: 'estatistica', day: 5, start: 12, span: 2, time: '17:10-18:50' },
-        { id: 'negociacao-sch', linkedId: 'negociacao', day: 2, start: 14, span: 2, time: '19:00-20:40' },
     ];
 
 
@@ -193,42 +201,118 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- FUNÇÕES DE RENDERIZAÇÃO ---
+    
+    /**
+     * **NOVA LÓGICA DE LAYOUT**
+     * Renderiza a grelha de horários, calculando dinamicamente a posição e largura dos eventos para evitar sobreposição.
+     */
     function renderSchedule() {
         scheduleGrid.innerHTML = ''; 
+        
+        // 1. Renderiza Cabeçalho e Coluna de Horas
         const headerCells = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-        scheduleGrid.insertAdjacentHTML('beforeend', '<div></div>');
+        scheduleGrid.insertAdjacentHTML('beforeend', '<div></div>'); // Canto
         headerCells.forEach(day => {
             scheduleGrid.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-slate-700 py-2 text-sm sm:text-base">${day}</div>`);
         });
 
+        // 2. Cria as colunas dos dias e as linhas de tempo
+        const timeColumn = document.createElement('div');
+        timeColumn.style.gridRow = '2 / span 32';
         for (let i = 7; i <= 22; i++) {
-            scheduleGrid.insertAdjacentHTML('beforeend', `<div class="text-right text-xs text-slate-400 pr-2 sm:pr-4 -mt-2" style="grid-row: ${i - 5};">${i}:00</div>`);
-            for (let j = 1; j <= 5; j++) {
-                scheduleGrid.insertAdjacentHTML('beforeend', `<div class="border-t border-slate-200" style="grid-column: ${j + 1}; grid-row: ${i - 5};"></div>`);
+            timeColumn.insertAdjacentHTML('beforeend', `<div class="text-right text-xs text-slate-400 pr-2 sm:pr-4 h-[50px] -mt-2">${i}:00</div>`);
+        }
+        scheduleGrid.appendChild(timeColumn);
+
+        const dayColumns = [];
+        for (let i = 1; i <= 5; i++) {
+            const dayColumn = document.createElement('div');
+            dayColumn.className = 'day-column border-t border-slate-200';
+            dayColumn.style.gridColumn = i + 1;
+            dayColumn.style.gridRow = '2 / span 32';
+            // Adiciona linhas de fundo para cada hora
+            for (let j = 7; j < 22; j++) {
+                dayColumn.insertAdjacentHTML('beforeend', `<div class="h-[50px] border-b border-slate-200"></div>`);
             }
+            scheduleGrid.appendChild(dayColumn);
+            dayColumns.push(dayColumn);
         }
 
-        appState.schedule.forEach(item => {
-            const subjectId = item.linkedId || item.id;
-            const subject = appState.subjects.find(s => s.id === subjectId);
-            if (!subject) return;
+        // 3. Processa e posiciona os eventos para cada dia
+        for (let day = 1; day <= 5; day++) {
+            const itemsToday = appState.schedule
+                .filter(item => item.day === day)
+                .map(item => ({...item, startMinutes: timeToMinutes(item.time.split('-')[0]), endMinutes: timeToMinutes(item.time.split('-')[1])}))
+                .sort((a, b) => a.startMinutes - b.startMinutes);
 
-            const details = courseDetails[subject.course];
-            const itemDiv = document.createElement('div');
-            itemDiv.className = `schedule-item p-2 rounded-lg border ${details.bgColor} ${details.borderColor} ${details.textColor} flex flex-col justify-between relative`;
-            itemDiv.style.gridColumn = `${item.day + 1}`;
-            itemDiv.style.gridRow = `${item.start} / span ${item.span}`;
+            if (itemsToday.length === 0) continue;
+
+            // Agrupa eventos que se sobrepõem
+            const groups = [];
+            let lastGroup = null;
+            for (const item of itemsToday) {
+                if (lastGroup && item.startMinutes < lastGroup.end) {
+                    lastGroup.items.push(item);
+                    lastGroup.end = Math.max(lastGroup.end, item.endMinutes);
+                } else {
+                    lastGroup = { items: [item], end: item.endMinutes };
+                    groups.push(lastGroup);
+                }
+            }
             
-            itemDiv.innerHTML = `
-                <div>
-                    <p class="font-semibold text-xs sm:text-sm">${subject.name}</p>
-                    <p class="text-xs opacity-80 mt-1">${item.time}</p>
-                </div>
-                <button data-id="${item.id}" class="delete-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-700">&times;</button>
-            `;
-            scheduleGrid.appendChild(itemDiv);
-        });
+            // Calcula o layout para cada grupo
+            for (const group of groups) {
+                const columns = [];
+                group.items.sort((a, b) => a.startMinutes - b.startMinutes);
+                for (const item of group.items) {
+                    let placed = false;
+                    for (const col of columns) {
+                        if (col[col.length - 1].endMinutes <= item.startMinutes) {
+                            col.push(item);
+                            item.colIndex = columns.indexOf(col);
+                            placed = true;
+                            break;
+                        }
+                    }
+                    if (!placed) {
+                        columns.push([item]);
+                        item.colIndex = columns.length - 1;
+                    }
+                }
+                
+                // Renderiza os itens do grupo com a largura e posição corretas
+                const totalCols = columns.length;
+                for (const item of group.items) {
+                    const subject = appState.subjects.find(s => s.id === item.linkedId);
+                    if (!subject) continue;
+
+                    const details = courseDetails[subject.course];
+                    const itemDiv = document.createElement('div');
+                    
+                    const top = (item.startMinutes - 7 * 60) * (50 / 60); // 50px por 60 min
+                    const height = (item.endMinutes - item.startMinutes) * (50 / 60);
+                    const width = 100 / totalCols;
+                    const left = item.colIndex * width;
+
+                    itemDiv.className = `schedule-item p-2 rounded-lg border ${details.bgColor} ${details.borderColor} ${details.textColor} flex flex-col justify-between z-10`;
+                    itemDiv.style.top = `${top}px`;
+                    itemDiv.style.height = `${height}px`;
+                    itemDiv.style.width = `calc(${width}% - 4px)`;
+                    itemDiv.style.left = `${left}%`;
+                    
+                    itemDiv.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-xs sm:text-sm">${subject.name}</p>
+                            <p class="text-xs opacity-80 mt-1">${item.time}</p>
+                        </div>
+                        <button data-id="${item.id}" class="delete-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-700">&times;</button>
+                    `;
+                    dayColumns[day - 1].appendChild(itemDiv);
+                }
+            }
+        }
     }
+
 
     function renderGradeCards() {
         gradeCardsContainer.innerHTML = '';
@@ -306,6 +390,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!timeStr) return 0;
         const [hours, minutes] = timeStr.split(':').map(Number);
         return (hours - 7) * 2 + (minutes / 30) + 2;
+    }
+
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
     }
 
     function resetAllScores() {

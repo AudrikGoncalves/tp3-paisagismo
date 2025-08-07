@@ -1,879 +1,411 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Biofílico | Portfólio de Paisagismo</title>
-    
-    <!-- Meta Tags para SEO e Compartilhamento Social -->
-    <meta name="description" content="Um projeto paisagístico inovador para transformar o ambiente acadêmico em um oásis de bem-estar, aprendizado e sustentabilidade.">
-    <meta name="author" content="Audrik Gonçalves">
-    <meta property="og:title" content="Campus Biofílico | Portfólio de Paisagismo">
-    <meta property="og:description" content="Integrando Natureza e Saber: um projeto paisagístico para o bem-estar e a sustentabilidade no ambiente acadêmico.">
-    <meta property="og:image" content="https://placehold.co/1200x630/059669/FFFFFF?text=Campus+Biof%C3%ADlico">
-    <meta property="og:url" content="[URL_DO_SEU_SITE_AQUI]">
-    <meta name="twitter:card" content="summary_large_image">
-
-    <!-- Preconnect para otimizar o carregamento de fontes -->
+    <title>Quadro de Horários Interativo com Notas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Scripts e Estilos -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos Globais e Utilitários */
-        :root {
-            --emerald-500: #10b981;
-            --emerald-600: #059669;
-            --emerald-700: #047857;
-            --gray-800: #1f2937;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Foco visível para acessibilidade */
-        *:focus-visible {
-            outline: 3px solid var(--emerald-500);
-            outline-offset: 2px;
-            border-radius: 4px;
-        }
-
-        /* Estilo do Header com efeito "scrolled" */
-        .header-scrolled {
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-
-        /* Destaque do link de navegação ativo */
-        .nav-link-active {
-            color: var(--emerald-600);
-            font-weight: 600;
-            position: relative;
-        }
-        .nav-link-active::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background-color: var(--emerald-600);
-            border-radius: 2px;
-        }
-        
-        /* Animações de entrada */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .animate-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Estilos de Tabela Profissionais */
-        .professional-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            border: 1px solid #d1d5db;
-            border-radius: 0.75rem;
-            overflow: hidden;
-        }
-        .professional-table th,
-        .professional-table td {
-            padding: 1rem 1.25rem;
-            text-align: left;
-            vertical-align: middle;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .professional-table th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: var(--gray-800);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-        .professional-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Estilo para a transição do menu mobile (acordeão) */
-        .mobile-submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-in-out;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        /* Estilos para o modal e animações */
+        dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+        .schedule-item:hover .delete-btn { opacity: 1; }
+        .delete-btn { opacity: 0; transition: opacity 0.2s ease-in-out; }
     </style>
 </head>
+<body class="bg-slate-100 text-slate-800 p-4 sm:p-6 md:p-8">
 
-<body class="bg-gray-100 text-gray-800">
-
-    <!-- ===== HEADER ===== -->
-    <header id="mainHeader" class="fixed w-full top-0 z-50 py-3 transition-all duration-300">
-        <div class="container mx-auto px-4 sm:px-6 flex justify-between items-center">
-            <a href="#hero" class="text-3xl font-bold text-emerald-600 hover:text-emerald-700 transition-colors duration-300">Campus Biofílico</a>
-            
-            <!-- Navegação Desktop -->
-            <nav class="hidden md:flex items-center">
-                <ul class="flex space-x-8 items-center">
-                    <li><a href="#autor" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Autor</a></li>
-                    <li><a href="#memorial" class="nav-link text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent">Memorial</a></li>
-                    
-                    <!-- Dropdown "O Projeto" -->
-                    <li class="relative group">
-                        <button class="nav-link-dropdown flex items-center text-gray-600 hover:text-emerald-600 transition-colors duration-300 pb-2 border-b-2 border-transparent" aria-haspopup="true">
-                            O Projeto
-                            <svg class="w-4 h-4 ml-1.5 transition-transform duration-200 group-hover:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <div class="absolute -left-4 mt-2 w-56 bg-white rounded-md shadow-lg py-2 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200 invisible group-hover:visible">
-                            <a href="#situacao" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-t-md"><svg class="w-5 h-5 mr-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>Situação</a>
-                            <a href="#platos" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700"><svg class="w-5 h-5 mr-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75" /></svg>Platôs</a>
-                            <a href="#implantacao" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700"><svg class="w-5 h-5 mr-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" /></svg>Implantação</a>
-                            <a href="#dimensionamento" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700"><svg class="w-5 h-5 mr-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-8.25v8.25m-10.5 0L12 21m0-18l5.25 5.25" /></svg>Dimensionamento</a>
-                            <a href="#paisagismo" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700"><svg class="w-5 h-5 mr-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18" /></svg>Paisagismo</a>
-                            <a href="#perspectivas" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-b-md"><svg class="w-5 h-5 mr-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639l7.5-10.5a1.012 1.012 0 011.634 0l7.5 10.5a1.012 1.012 0 010 .638l-7.5 10.5a1.012 1.012 0 01-1.634 0l-7.5-10.5z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>Perspectivas</a>
-                        </div>
-                    </li>
-
-                    <li><a href="#downloads" class="inline-flex items-center bg-emerald-600 text-white font-medium py-2 px-4 rounded-full shadow-sm hover:bg-emerald-700 transition-all duration-300 transform hover:scale-105">
-                        <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-                        Downloads
-                    </a></li>
-                </ul>
-            </nav>
-
-            <!-- Botão do Menu Mobile -->
-            <div class="md:hidden">
-                <button id="mobileMenuButton" class="text-gray-600 hover:text-emerald-600 focus:outline-none p-2 rounded-md" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="mobileMenu">
-                    <svg class="h-7 w-7 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="menuIconOpen">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    <svg class="h-7 w-7 hidden transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="menuIconClose">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+    <div class="max-w-7xl mx-auto">
+        <!-- Cabeçalho -->
+        <header class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Horário Académico Interativo</h1>
+            <p class="text-slate-500 mt-1">Grelha unificada com controlo de notas persistente. Adicione, edite e remova itens.</p>
+            <div class="flex flex-wrap gap-4 mt-4">
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-sky-200 border border-sky-300"></span><span class="text-sm font-medium">Arquitetura e Urbanismo</span></div>
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-teal-200 border border-teal-300"></span><span class="text-sm font-medium">Engenharia Civil</span></div>
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-amber-200 border border-amber-300"></span><span class="text-sm font-medium">Pessoal / Estudo</span></div>
             </div>
+        </header>
+
+        <!-- Grelha Principal de Horários -->
+        <div class="bg-white p-4 rounded-2xl shadow-lg relative">
+            <div id="schedule-grid" class="grid grid-cols-[auto_repeat(5,_1fr)] gap-1 sm:gap-2" style="grid-template-rows: auto repeat(16, minmax(50px, 1fr));">
+                <!-- Conteúdo da grelha será gerado por JS -->
+            </div>
+            <button id="add-schedule-item-btn" class="absolute top-4 right-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-md">
+                + Adicionar ao Horário
+            </button>
         </div>
 
-        <!-- Menu Mobile -->
-        <div id="mobileMenu" class="md:hidden hidden bg-white shadow-lg rounded-b-lg mx-2 mt-2 origin-top">
-            <div class="py-2">
-                <a href="#autor" class="nav-link-mobile block text-gray-700 hover:bg-emerald-50 px-5 py-3 transition-colors duration-300">Autor</a>
-                <a href="#memorial" class="nav-link-mobile block text-gray-700 hover:bg-emerald-50 px-5 py-3 transition-colors duration-300">Memorial</a>
-                <!-- Acordeão Mobile "O Projeto" -->
-                <div>
-                    <button id="mobileProjectAccordion" class="w-full flex justify-between items-center text-gray-700 hover:bg-emerald-50 px-5 py-3 transition-colors duration-300" aria-expanded="false">
-                        <span>O Projeto</span>
-                        <svg class="w-5 h-5 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                           <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
+        <!-- Secção de Controlo de Notas -->
+        <section id="grade-tracker" class="mt-8">
+            <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-900">Controlo de Notas</h2>
+                <div class="flex gap-4">
+                    <button id="reset-progress-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-md">
+                        Reiniciar Progresso
                     </button>
-                    <div id="mobileSubmenu" class="mobile-submenu pl-5 bg-gray-50">
-                        <a href="#situacao" class="nav-link-mobile block text-gray-600 hover:bg-emerald-100 px-5 py-3 text-sm">Situação</a>
-                        <a href="#platos" class="nav-link-mobile block text-gray-600 hover:bg-emerald-100 px-5 py-3 text-sm">Platôs</a>
-                        <a href="#implantacao" class="nav-link-mobile block text-gray-600 hover:bg-emerald-100 px-5 py-3 text-sm">Implantação</a>
-                        <a href="#dimensionamento" class="nav-link-mobile block text-gray-600 hover:bg-emerald-100 px-5 py-3 text-sm">Dimensionamento</a>
-                        <a href="#paisagismo" class="nav-link-mobile block text-gray-600 hover:bg-emerald-100 px-5 py-3 text-sm">Paisagismo</a>
-                        <a href="#perspectivas" class="nav-link-mobile block text-gray-600 hover:bg-emerald-100 px-5 py-3 text-sm">Perspectivas</a>
-                    </div>
+                    <button id="add-subject-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-md">
+                        + Adicionar Matéria
+                    </button>
                 </div>
-                <a href="#downloads" class="nav-link-mobile block text-gray-700 hover:bg-emerald-50 px-5 py-3 transition-colors duration-300">Downloads</a>
             </div>
-        </div>
-    </header>
-
-    <!-- ===== SEÇÃO HERO ===== -->
-    <section id="hero" class="min-h-screen flex items-center bg-gradient-to-br from-green-100 via-emerald-50 to-teal-100 pt-20">
-        <div class="container mx-auto px-4 sm:px-6 text-center">
-            <div class="animate-on-scroll">
-                <h1 class="text-5xl md:text-7xl font-extrabold text-emerald-800 mb-6 leading-tight">
-                    Campus Biofílico: <span class="block md:inline bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">Integrando Natureza e Saber.</span>
-                </h1>
-                <p class="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto">
-                    Um projeto paisagístico inovador para transformar o ambiente acadêmico em um oásis de bem-estar, aprendizado e sustentabilidade.
-                </p>
-                <a href="#autor" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-10 rounded-lg shadow-lg text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl focus:ring-4 focus:ring-emerald-300">
-                    Conheça o Projeto
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <main>
-        <!-- ===== SEÇÃO AUTOR ===== -->
-        <section id="autor" class="content-section py-20 lg:py-32 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="animate-on-scroll max-w-4xl mx-auto grid md:grid-cols-3 gap-8 md:gap-12 items-center">
-                    <div class="md:col-span-1">
-                        <img src="Imagens/IMG_3984.jpg" alt="Foto de Audrik Gonçalves" class="rounded-full shadow-lg mx-auto w-48 h-48 md:w-full md:h-auto object-cover" loading="lazy">
-                    </div>
-                    <div class="md:col-span-2 text-center md:text-left">
-                        <h2 class="text-4xl font-bold text-gray-800 mb-2">Audrik Gonçalves</h2>
-                        <p class="text-lg font-medium text-emerald-600 mb-4">Estudante de Arquitetura e Urbanismo & Engenharia Civil</p>
-                        <p class="text-gray-600 leading-relaxed mb-6">
-                            Estudante proativo de dupla graduação pela PUC Minas. Este projeto explora a biofilia como ferramenta para reconectar as pessoas à natureza, melhorando o bem-estar e a qualidade de vida. Meu objetivo é transformar ambientes em lugares mais acolhedores e inspiradores, trazendo a essência da natureza para o cotidiano.
-                        </p>
-                        <div class="flex items-center justify-center md:justify-start space-x-5">
-                            <a href="https://www.linkedin.com/in/audrik-duarte-coelho-gonçalves-800b24306" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-emerald-600 transition-all duration-300 transform hover:scale-110" title="LinkedIn">
-                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"/></svg>
-                            </a>
-                            <a href="https://www.instagram.com/audrik_dcg" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-emerald-600 transition-all duration-300 transform hover:scale-110" title="Instagram">
-                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            <div id="grade-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cartões de notas serão injetados aqui pelo JavaScript -->
             </div>
         </section>
-
-        <!-- ===== SEÇÃO DADOS DO PROJETO ===== -->
-        <section id="dados-projeto" class="content-section py-20 lg:py-32 bg-white">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center max-w-4xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Dados do Projeto</h2>
-                    <p class="text-lg text-gray-600">Especificações técnicas e informações gerais sobre a intervenção paisagística.</p>
-                </div>
-
-                <div class="mt-12 max-w-4xl mx-auto bg-gray-50 rounded-xl shadow-lg p-8 animate-on-scroll">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <h3 class="text-2xl font-bold text-emerald-700 mb-4">Dados Gerais</h3>
-                            <ul class="space-y-3 text-gray-700">
-                                <li class="flex items-start"><strong class="w-32 font-semibold">Interessado:</strong> <span>PUC MINAS</span></li>
-                                <li class="flex items-start"><strong class="w-32 font-semibold">Local:</strong> <span>Rua Dom José Gaspar, 500 – Coração Eucarístico, Belo Horizonte, MG</span></li>
-                                <li class="flex items-start"><strong class="w-32 font-semibold">Tipo de Obra:</strong> <span>Institucional</span></li>
-                            </ul>
-                        </div>
-                         <div>
-                            <h3 class="text-2xl font-bold text-emerald-700 mb-4">Dados Físicos</h3>
-                            <ul class="space-y-3 text-gray-700">
-                                <li class="flex items-start"><strong class="w-40 font-semibold">Área Implantada:</strong> <span>288.121,26 m²</span></li>
-                                <li class="flex items-start"><strong class="w-40 font-semibold">Área de Forrações:</strong> <span>288.121,26 m²</span></li>
-                                <li class="flex items-start"><strong class="w-40 font-semibold">Número de Árvores:</strong> <span>1.850 unidades</span></li>
-                                <li class="flex items-start"><strong class="w-40 font-semibold">Número de Palmeiras:</strong> <span>314 unidades</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO MEMORIAL ===== -->
-        <section id="memorial" class="content-section py-20 lg:py-32 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center max-w-4xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Memorial Descritivo</h2>
-                </div>
-
-                <div class="max-w-4xl mx-auto mt-8 space-y-12">
-                    <!-- Conceito, Diretrizes e Programa -->
-                    <div class="animate-on-scroll">
-                        <h3 class="text-3xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">Conceito, Diretrizes e Programa</h3>
-                        <p class="text-lg text-gray-600 leading-relaxed">O projeto paisagístico criado para o Campus da PUC Minas Coração Eucarístico é concebido sob o pilar da **biofilia e sustentabilidade**, buscando criar um ambiente que promova a conexão intrínseca entre o ser humano e a natureza, ao mesmo tempo em que adota práticas ecologicamente responsáveis. A principal diretriz é a integração harmoniosa de espaços de convívio, estudo e lazer com ecossistemas funcionais, que contribuam para a biodiversidade local e o bem-estar da comunidade acadêmica. A forma com que buscamos fazer isso foi com a **PERMANÊNCIA**.</p>
-                        <p class="mt-4 text-lg text-gray-600 leading-relaxed">O programa do projeto visa atender às necessidades de um campus universitário moderno, oferecendo:</p>
-                        <ul class="mt-4 space-y-3 text-gray-600 list-disc list-inside">
-                            <li><strong>Espaços de Convivência e Descanso:</strong> Áreas sombreadas e mobiliadas para interação social, estudo informal e relaxamento.</li>
-                            <li><strong>Caminhos e Conexões:</strong> Rotas claras e acessíveis que facilitam a circulação de pedestres.</li>
-                            <li><strong>Jardins Biodiversos:</strong> Áreas de plantio que atraem a fauna local e promovem a educação ambiental.</li>
-                            <li><strong>Restaurante Universitário:</strong> Um espaço focado na inclusão social e atração da comunidade para uma área antes subutilizada.</li>
-                            <li><strong>Horta Comunitária:</strong> Com uma zona de alta produção para o restaurante e uma zona de aprendizado com layout orgânico.</li>
-                            <li><strong>O Lago:</strong> Com borda naturalista, vegetação aquática e ilhas esculturais que se integram à paisagem.</li>
-                        </ul>
-                    </div>
-
-                    <!-- Acessos (Entorno) -->
-                    <div class="animate-on-scroll">
-                        <h3 class="text-3xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">Acessos (Entorno)</h3>
-                        <p class="text-lg text-gray-600 leading-relaxed">O recorte do Campus Biofílico se integra de forma estratégica com o seu entorno, considerando os principais pontos de acesso e a infraestrutura existente. Os acessos para pedestres são priorizados, com a criação de percursos convidativos que se conectam diretamente às vias circundantes e aos edifícios adjacentes do campus. A relação com as vias de veículos é gerenciada para garantir segurança e minimizar o impacto sonoro e visual, com um novo estacionamento subterrâneo para afastar os carros das pessoas. Barreiras verdes e elementos de design direcionam o fluxo de forma intuitiva, mantendo a permeabilidade visual e física com o entorno e tornando-o um ponto de interesse.</p>
-                    </div>
-
-                    <!-- Pavimentos -->
-                    <div class="animate-on-scroll">
-                        <h3 class="text-3xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">Pavimentos e Materiais</h3>
-                        <div class="space-y-6">
-                            <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Concreto Permeável</h4>
-                                <p class="text-gray-600 mt-1">Utilizado em grandes áreas de circulação, permite a infiltração da água da chuva, reduzindo o escoamento, recarregando o lençol freático e minimizando enchentes. Sua superfície porosa contribui para a redução do efeito "ilha de calor" e pode incorporar resíduos reciclados.</p>
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Piso Intertravado de Concreto</h4>
-                                <p class="text-gray-600 mt-1">Empregado em caminhos secundários, oferece boa permeabilidade, fácil manutenção e estética versátil. A possibilidade de usar blocos com material reciclado reforça o compromisso com a sustentabilidade.</p>
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Deck de Madeira Ecológica</h4>
-                                <p class="text-gray-600 mt-1">Aplicado em áreas de estar, proporciona conforto térmico e tátil com estética acolhedora. A escolha por materiais reciclados (plástico) ou certificados (madeira) garante a sustentabilidade, evitando o desmatamento.</p>
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Brita Lavada ou Seixo Rolado</h4>
-                                <p class="text-gray-600 mt-1">Utilizado em áreas de transição e jardins de chuva, é um material de baixo custo, alta permeabilidade, excelente para drenagem e com estética naturalista, auxiliando na infiltração de água.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mobiliário -->
-                    <div class="animate-on-scroll">
-                        <h3 class="text-3xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">Mobiliário</h3>
-                         <div class="space-y-6">
-                            <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Bancos e Cadeiras</h4>
-                                <p class="text-gray-600 mt-1">Feitos de madeira plástica ou certificada com estruturas de aço, possuem design ergonômico para proporcionar conforto para longos períodos. O material sustentável garante alta durabilidade e baixa manutenção.</p>
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Lixeiras Ecológicas</h4>
-                                <p class="text-gray-600 mt-1">Com compartimentos para coleta seletiva (orgânico, papel, plástico, metal), incentivam a separação de resíduos e a reciclagem, reforçando a sustentabilidade do projeto.</p>
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Luminárias LED</h4>
-                                <p class="text-gray-600 mt-1">Com tecnologia LED, garantem alta eficiência energética e longa vida útil. O design busca minimizar a poluição luminosa, direcionando a luz de forma eficiente para os caminhos e áreas de convívio.</p>
-                            </div>
-                             <div>
-                                <h4 class="text-xl font-semibold text-emerald-700">Bebedouros</h4>
-                                <p class="text-gray-600 mt-1">Essenciais para o conforto, incentivam a hidratação e reduzem o uso de garrafas plásticas descartáveis. Fabricados em aço inoxidável resistente, com design integrado à paisagem.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Paisagismo -->
-                    <div class="animate-on-scroll">
-                        <h3 class="text-3xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">Paisagismo e Vegetação</h3>
-                        <p class="text-lg text-gray-600 leading-relaxed mb-4">A seleção da vegetação é pautada na promoção da biodiversidade, na atração da fauna local, na baixa manutenção e na adaptação às condições climáticas de Belo Horizonte. Prioriza-se o uso de espécies nativas de Minas Gerais e do bioma Mata Atlântica/Cerrado, que são mais resilientes e contribuem para a restauração ecológica. A representação na implantação considera o tamanho da copa adulta para prever seu impacto futuro no espaço.</p>
-                        
-                        <h4 class="text-xl font-semibold text-emerald-700 mt-6 mb-2">Árvores</h4>
-                        <ul class="list-disc list-inside space-y-2 text-gray-600">
-                            <li><strong>Pequeno Porte (até 7m):</strong> Quaresmeira (<em>Tibouchina granulosa</em>) para emoldurar vistas e prover sombra com sua floração exuberante.</li>
-                            <li><strong>Médio Porte (7m a 15m):</strong> Jabuticabeira (<em>Myrciaria jaboticaba</em>) para o pomar-jardim, oferecendo frutos e atraindo a fauna.</li>
-                            <li><strong>Grande Porte (acima de 15m):</strong> Jatobá (<em>Hymenaea Courbaril</em>) e Guanandi (<em>Calophyllum brasiliense</em>) para sombreamento massivo e atração de fauna diversa.</li>
-                        </ul>
-
-                        <h4 class="text-xl font-semibold text-emerald-700 mt-6 mb-2">Arbustos e Forrações</h4>
-                        <ul class="list-disc list-inside space-y-2 text-gray-600">
-                            <li><strong>Moréia, Liríope, Sálvia, Gaura:</strong> Usadas para criar bases texturizadas, focos de cor e atrair polinizadores nos canteiros.</li>
-                            <li><strong>Capim-do-texas-rubro e Sálvia-mexicana:</strong> Adicionam textura, cor e formam bordas ornamentais na interface com edificações e o lago.</li>
-                            <li><strong>Trepadeiras e Ervas Aromáticas:</strong> Utilizadas em pergolados para sombra e em canteiros elevados para experiências sensoriais.</li>
-                            <li><strong>Vegetação Aquática:</strong> Papiro e Cavalinha para criar gestos verticais e uma estética naturalista na borda do lago.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Tabela de Plantas -->
-        <div class="py-20 bg-white">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="animate-on-scroll">
-                    <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Especificação das Plantas</h3>
-                    <div class="overflow-x-auto max-w-5xl mx-auto shadow-lg rounded-xl bg-white">
-                        <table class="professional-table">
-                            <thead>
-                                <tr>
-                                    <th class="w-24">Imagem</th>
-                                    <th>Nome Comum</th>
-                                    <th>Nome Científico</th>
-                                    <th>Porte</th>
-                                    <th>Observações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Unha-de-Vaca" data-fancybox="botanica" data-caption="Unha-de-Vaca (Bauhinia longifolia)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Unha-de-Vaca" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Unha-de-Vaca</td>
-                                    <td class="italic">Bauhinia longifolia</td>
-                                    <td>Pequeno</td>
-                                    <td>Atrai polinizadores, rápido crescimento.</td>
-                                </tr>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Guamirim" data-fancybox="botanica" data-caption="Guamirim (Myrciaria tenella)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Guamirim" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Guamirim</td>
-                                    <td class="italic">Myrciaria tenella</td>
-                                    <td>Pequeno</td>
-                                    <td>Frutos atraem pássaros.</td>
-                                </tr>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Angelim-Doce" data-fancybox="botanica" data-caption="Angelim-Doce (Andira fraxinifolia)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Angelim-Doce" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Angelim-Doce</td>
-                                    <td class="italic">Andira fraxinifolia</td>
-                                    <td>Médio</td>
-                                    <td>Atrai abelhas, bom sombreamento.</td>
-                                </tr>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Copa%C3%ADba" data-fancybox="botanica" data-caption="Copaíba (Copaifera langsdorffii)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Copaíba" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Copaíba</td>
-                                    <td class="italic">Copaifera langsdorffii</td>
-                                    <td>Médio</td>
-                                    <td>Atrai abelhas e pássaros.</td>
-                                </tr>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Ip%C3%AA-Amarelo" data-fancybox="botanica" data-caption="Ipê-Amarelo (Handroanthus ochraceus)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Ipê-Amarelo" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Ipê-Amarelo</td>
-                                    <td class="italic">Handroanthus ochraceus</td>
-                                    <td>Médio</td>
-                                    <td>Floração exuberante, atrai polinizadores.</td>
-                                </tr>
-                                 <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Jatob%C3%A1" data-fancybox="botanica" data-caption="Jatobá (Hymenaea Courbaril)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Jatobá" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Jatobá</td>
-                                    <td class="italic">Hymenaea Courbaril</td>
-                                    <td>Grande</td>
-                                    <td>Frutos atraem fauna, sombreamento denso.</td>
-                                </tr>
-                                 <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Guanandi" data-fancybox="botanica" data-caption="Guanandi (Calophyllum brasiliense)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Guanandi" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Guanandi</td>
-                                    <td class="italic">Calophyllum brasiliense</td>
-                                    <td>Grande</td>
-                                    <td>Flores melíferas, frutos para fauna.</td>
-                                </tr>
-                                 <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x600/A7F3D0/1E40AF?text=Abutilon" data-fancybox="botanica" data-caption="Abutilon (Abutilon sp.)">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Planta" alt="Imagem de Abutilon" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Abutilon</td>
-                                    <td class="italic">Abutilon sp.</td>
-                                    <td>Arbusto</td>
-                                    <td>Baixa manutenção, atrai biodiversidade.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Tabela de Mobiliário -->
-                <div class="mt-16 animate-on-scroll">
-                    <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Especificações do Mobiliário</h3>
-                    <div class="overflow-x-auto max-w-6xl mx-auto shadow-lg rounded-xl bg-white">
-                        <table class="professional-table">
-                            <thead>
-                                <tr>
-                                    <th class="w-24">Imagem</th>
-                                    <th>Item</th>
-                                    <th>Material</th>
-                                    <th>Design e Funcionalidade</th>
-                                    <th>Integração Biofílica</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/600x400/A7F3D0/1E40AF?text=Banco+Sustent%C3%A1vel" data-fancybox="mobiliario" data-caption="Bancos Modulares - Campus Biofílico">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Banco" alt="Imagem de Banco Modular" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Bancos Modulares</td>
-                                    <td>Madeira plástica/certificada, aço</td>
-                                    <td>Design ergonômico e versátil, permite diferentes configurações para descanso ou estudo.</td>
-                                    <td>Materiais sustentáveis, design que se integra à paisagem e promove o convívio.</td>
-                                </tr>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/500x700/A7F3D0/1E40AF?text=Lumin%C3%A1ria+LED" data-fancybox="mobiliario" data-caption="Luminária LED de Baixo Impacto - Campus Biofílico">
-                                            <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Lumin%C3%A1ria" alt="Imagem de Luminária LED" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Luminária LED</td>
-                                    <td>Alumínio reciclado / Aço galvanizado</td>
-                                    <td>Alta eficiência energética, longa vida útil, iluminação direcionada para evitar poluição luminosa.</td>
-                                    <td>Mínimo impacto noturno na fauna, uso de materiais reciclados.</td>
-                                </tr>
-                                <tr class="hover:bg-emerald-50 transition-colors duration-200">
-                                    <td>
-                                        <a href="https://placehold.co/700x500/A7F3D0/1E40AF?text=Lixeira+Seletiva" data-fancybox="mobiliario" data-caption="Lixeira para Coleta Seletiva - Campus Biofílico">
-                                             <img src="https://placehold.co/80x80/A7F3D0/1E40AF?text=Lixeira" alt="Imagem de Lixeira Seletiva" class="w-20 h-20 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" loading="lazy">
-                                        </a>
-                                    </td>
-                                    <td>Lixeira Ecológica</td>
-                                    <td>Plástico reciclado / Metal reciclado</td>
-                                    <td>Compartimentos para coleta seletiva, incentiva a separação de resíduos e a reciclagem.</td>
-                                    <td>Reforça a cultura de sustentabilidade e cuidado com o meio ambiente no campus.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- FICHA DE ESPECIFICAÇÃO -->
-                <div class="mt-16 animate-on-scroll">
-                    <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Fichas de Especificação</h3>
-                    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div class="bg-gray-100 p-6 rounded-lg shadow-md text-center transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-                             <h4 class="font-bold text-lg text-emerald-800">FICHA DE ESPECIFICAÇÃO</h4>
-                             <p class="text-gray-600 mt-2">(PAVIMENTO)</p>
-                        </div>
-                         <div class="bg-gray-100 p-6 rounded-lg shadow-md text-center transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-                             <h4 class="font-bold text-lg text-emerald-800">FICHA DE ESPECIFICAÇÃO</h4>
-                             <p class="text-gray-600 mt-2">(MOBILIÁRIO)</p>
-                        </div>
-                         <div class="bg-gray-100 p-6 rounded-lg shadow-md text-center transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-                             <h4 class="font-bold text-lg text-emerald-800">FICHA DE ESPECIFICAÇÃO</h4>
-                             <p class="text-gray-600 mt-2">(BOTÂNICO)</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- ===== SEÇÃO SITUAÇÃO ===== -->
-        <section id="situacao" class="content-section py-20 lg:py-32 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center max-w-3xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Situação</h2>
-                    <p class="text-lg text-gray-600 leading-relaxed">Análise da localização do campus, seus acessos, entorno e as características pré-existentes do terreno, fundamentais para o desenvolvimento do projeto paisagístico.</p>
-                </div>
-                <div class="mt-16 animate-on-scroll">
-                    <a href="https://placehold.co/1200x700/A7F3D0/1E40AF?text=Mapa+de+Situa%C3%A7%C3%A3o" data-fancybox="projeto" data-caption="Mapa de Situação e Localização do Campus">
-                        <figure class="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 max-w-5xl mx-auto">
-                            <img src="https://placehold.co/1200x700/A7F3D0/1E40AF?text=Mapa+de+Situa%C3%A7%C3%A3o" alt="Imagem do mapa de situação" class="w-full h-auto object-cover" loading="lazy">
-                        </figure>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO PLATÔS ===== -->
-        <section id="platos" class="content-section py-20 lg:py-32 bg-white">
-            <div class="container mx-auto px-4 sm:px-6">
-                 <div class="text-center max-w-3xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Platôs e Topografia</h2>
-                    <p class="text-lg text-gray-600 leading-relaxed">Estudo da topografia e definição dos platôs de intervenção, buscando a otimização do movimento de terra e a criação de percursos e espaços interessantes.</p>
-                </div>
-                <div class="mt-16 animate-on-scroll">
-                    <a href="https://placehold.co/1200x700/CCFBF1/0C4A6E?text=Estudo+de+Plat%C3%B4s" data-fancybox="projeto" data-caption="Estudo topográfico e definição de platôs">
-                        <figure class="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 max-w-5xl mx-auto">
-                            <img src="https://placehold.co/1200x700/CCFBF1/0C4A6E?text=Estudo+de+Plat%C3%B4s" alt="Imagem do estudo de platôs" class="w-full h-auto object-cover" loading="lazy">
-                        </figure>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO IMPLANTAÇÃO ===== -->
-        <section id="implantacao" class="content-section py-20 lg:py-32 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6">
-                 <div class="text-center max-w-3xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Implantação</h2>
-                    <p class="text-lg text-gray-600 leading-relaxed">Visão geral da distribuição espacial do projeto, destacando a setorização, os principais eixos de circulação e a relação com o entorno construído e natural.</p>
-                </div>
-                 <div class="mt-16 animate-on-scroll">
-                    <a href="https://placehold.co/1200x800/A7F3D0/1E40AF?text=Implanta%C3%A7%C3%A3o+Geral" data-fancybox="projeto" data-caption="Implantação Geral do Projeto Campus Biofílico">
-                        <figure class="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 max-w-5xl mx-auto">
-                            <img src="https://placehold.co/1200x800/A7F3D0/1E40AF?text=Implanta%C3%A7%C3%A3o+Geral" alt="Imagem da Implantação Geral do Campus" class="w-full h-auto object-cover" loading="lazy">
-                        </figure>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO DIMENSIONAMENTO ===== -->
-        <section id="dimensionamento" class="content-section py-20 lg:py-32 bg-white">
-            <div class="container mx-auto px-4 sm:px-6">
-                 <div class="text-center max-w-3xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Dimensionamento</h2>
-                    <p class="text-lg text-gray-600 leading-relaxed">Detalhes técnicos sobre o dimensionamento de caminhos, áreas de permanência e estruturas, garantindo conforto, acessibilidade e funcionalidade.</p>
-                </div>
-                <div class="mt-16 animate-on-scroll">
-                    <a href="https://placehold.co/1200x700/CCFBF1/0C4A6E?text=Detalhe+de+Dimensionamento" data-fancybox="projeto" data-caption="Planta com cotas de dimensionamento de percursos">
-                        <figure class="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 max-w-5xl mx-auto">
-                            <img src="https://placehold.co/1200x700/CCFBF1/0C4A6E?text=Detalhe+de+Dimensionamento" alt="Imagem do detalhe de dimensionamento" class="w-full h-auto object-cover" loading="lazy">
-                        </figure>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO PAISAGISMO ===== -->
-        <section id="paisagismo" class="content-section py-20 lg:py-32 bg-gray-50">
-            <div class="container mx-auto px-4 sm:px-6">
-                 <div class="text-center max-w-3xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Planta de Paisagismo</h2>
-                    <p class="text-lg text-gray-600 leading-relaxed">Desenho técnico que detalha a locação exata de todas as espécies vegetais, mobiliário e elementos de piso, guiando a execução fiel do projeto em campo.</p>
-                </div>
-                <div class="mt-16 animate-on-scroll">
-                    <a href="https://placehold.co/1200x800/A7F3D0/1E40AF?text=Planta+de+Paisagismo" data-fancybox="projeto" data-caption="Planta de Paisagismo detalhada">
-                        <figure class="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 max-w-6xl mx-auto">
-                            <img src="https://placehold.co/1200x800/A7F3D0/1E40AF?text=Planta+de+Paisagismo" alt="Imagem da planta de paisagismo" class="w-full h-auto object-cover" loading="lazy">
-                        </figure>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO PERSPECTIVAS ===== -->
-        <section id="perspectivas" class="content-section py-20 lg:py-32 bg-white">
-            <div class="container mx-auto px-4 sm:px-6">
-                 <div class="text-center max-w-3xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Perspectivas</h2>
-                    <p class="text-lg text-gray-600 leading-relaxed">Visualizações que comunicam a atmosfera, a escala humana e o uso dos espaços, demonstrando o potencial de transformação e bem-estar do projeto finalizado.</p>
-                </div>
-                 <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="animate-on-scroll">
-                        <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Detalhada+1" data-fancybox="gallery-perspectivas" data-caption="Área de Convivência: Materiais naturais e vegetação exuberante convidam ao relaxamento e interação.">
-                            <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                                <img src="https://placehold.co/600x450/A7F3D0/1E40AF?text=Perspectiva+1" alt="Perspectiva da Área de Convivência Principal" class="w-full h-56 object-cover" loading="lazy">
-                                <div class="p-6">
-                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Área de Convivência</h3>
-                                    <p class="text-gray-600 text-sm">Espaço central para encontros e eventos, com mobiliário integrado.</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="animate-on-scroll" style="--delay: 150ms;">
-                        <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Detalhada+2" data-fancybox="gallery-perspectivas" data-caption="Jardim Sensorial: Um percurso entre texturas, aromas e cores, estimulando os sentidos.">
-                            <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                                <img src="https://placehold.co/600x450/A7F3D0/1E40AF?text=Perspectiva+2" alt="Perspectiva do Jardim Sensorial" class="w-full h-56 object-cover" loading="lazy">
-                                <div class="p-6">
-                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Jardim Sensorial</h3>
-                                    <p class="text-gray-600 text-sm">Percurso desenhado para estimular os sentidos com plantas diversas.</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                     <div class="animate-on-scroll" style="--delay: 300ms;">
-                        <a href="https://placehold.co/1200x900/A7F3D0/1E40AF?text=Perspectiva+Detalhada+3" data-fancybox="gallery-perspectivas" data-caption="Refúgio de Estudo: Mobiliário confortável sob a sombra de árvores, com pontos de energia.">
-                            <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
-                                <img src="https://placehold.co/600x450/A7F3D0/1E40AF?text=Perspectiva+3" alt="Perspectiva do Refúgio de Estudo Verde" class="w-full h-56 object-cover" loading="lazy">
-                                <div class="p-6">
-                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Refúgio de Estudo</h3>
-                                    <p class="text-gray-600 text-sm">Nicho de tranquilidade para estudo, envolvido por vegetação densa.</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO DOWNLOADS ===== -->
-        <section id="downloads" class="content-section py-20 lg:py-32 bg-emerald-700 text-white">
-            <div class="container mx-auto px-4 sm:px-6">
-                 <div class="text-center max-w-3xl mx-auto animate-on-scroll">
-                    <h2 class="text-4xl font-bold mb-4">Downloads</h2>
-                    <p class="text-lg text-emerald-200 leading-relaxed">Acesse os arquivos principais do projeto para uma consulta técnica e avaliação detalhada da proposta.</p>
-                </div>
-                <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    <a href="javascript:void(0);" class="download-link bg-white/10 hover:bg-white/20 p-8 rounded-lg flex flex-col items-center text-center transition-all duration-300 transform hover:scale-105">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        <span class="font-semibold text-lg">Memorial Descritivo</span>
-                        <span class="text-sm text-emerald-200 mt-1">PDF Completo</span>
-                    </a>
-                    <a href="javascript:void(0);" class="download-link bg-white/10 hover:bg-white/20 p-8 rounded-lg flex flex-col items-center text-center transition-all duration-300 transform hover:scale-105">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                        <span class="font-semibold text-lg">Pranchas Técnicas</span>
-                         <span class="text-sm text-emerald-200 mt-1">PDF Detalhado</span>
-                    </a>
-                    <a href="javascript:void(0);" class="download-link bg-white/10 hover:bg-white/20 p-8 rounded-lg flex flex-col items-center text-center transition-all duration-300 transform hover:scale-105">
-                       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4m0 0h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V16a2 2 0 01-2 2h-1" /></svg>
-                        <span class="font-semibold text-lg">Projeto Completo</span>
-                         <span class="text-sm text-emerald-200 mt-1">Arquivo .ZIP</span>
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="bg-gray-800 text-gray-400 py-12">
-        <div class="container mx-auto px-6 text-center">
-            <a href="#hero" class="text-2xl font-bold text-emerald-500 hover:text-emerald-400 transition-colors duration-300 mb-4 inline-block">Campus Biofílico</a>
-            <p class="mb-6 text-gray-300">Um projeto de Audrik Gonçalves para a disciplina de Paisagismo.</p>
-            <div class="flex items-center justify-center space-x-6 mb-8">
-                <a href="https://www.linkedin.com/in/audrik-duarte-coelho-gonçalves-800b24306" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-emerald-400 transition-all duration-300 transform hover:scale-110" title="LinkedIn"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"/></svg></a>
-                <a href="https://www.instagram.com/audrik_dcg" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-emerald-400 transition-all duration-300 transform hover:scale-110" title="Instagram"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-                <a href="mailto:audrikduarte@gmail.com" class="text-gray-400 hover:text-emerald-400 transition-all duration-300 transform hover:scale-110" title="E-mail"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></a>
-            </div>
-            <p class="text-xs text-gray-500">&copy; <span id="currentYear"></span> Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <!-- Modal para feedback de download -->
-    <div id="downloadModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
-            <h3 id="modal-title" class="text-xl font-semibold text-gray-800 mb-2">Link de Exemplo</h3>
-            <p class="text-gray-600 mb-6">Em um projeto real, este link iniciaria o download do arquivo solicitado.</p>
-            <button id="closeModalButton" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">Entendi</button>
-        </div>
     </div>
 
-
-    <!-- Scripts essenciais no final do body -->
-    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <!-- Modal para adicionar/editar Matérias e Itens de Horário -->
+    <dialog id="item-modal" class="p-6 bg-white rounded-2xl shadow-xl w-full max-w-md">
+        <h3 id="modal-title" class="text-2xl font-bold text-slate-900 mb-6">Adicionar Novo Item</h3>
+        <form id="item-form">
+            <input type="hidden" id="item-id">
+            <div class="mb-4">
+                <label for="item-name" class="block text-sm font-medium text-slate-700 mb-1">Nome da Matéria / Tarefa</label>
+                <input type="text" id="item-name" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400" required>
+            </div>
+            <div class="mb-4">
+                <label for="item-course" class="block text-sm font-medium text-slate-700 mb-1">Tipo / Curso</label>
+                <select id="item-course" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400">
+                    <option value="arq">Arquitetura e Urbanismo</option>
+                    <option value="eng">Engenharia Civil</option>
+                    <option value="personal">Pessoal / Estudo</option>
+                </select>
+            </div>
             
-            // --- INICIALIZAÇÃO DE PLUGINS ---
-            Fancybox.bind("[data-fancybox]", {
-                Thumbs: false,
-                Toolbar: {
-                    display: {
-                        left: [],
-                        middle: [],
-                        right: ["zoom", "slideshow", "fullscreen", "download", "close"],
-                    },
-                },
-                caption: (fancybox, slide) => slide.caption || "",
-            });
+            <div id="schedule-fields" class="border-t pt-4 mt-4">
+                 <p class="text-sm font-medium text-slate-600 mb-2">Detalhes do Horário (Opcional)</p>
+                 <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="item-day" class="block text-sm font-medium text-slate-700 mb-1">Dia</label>
+                        <select id="item-day" class="w-full p-2 border border-slate-300 rounded-lg">
+                            <option value="1">Segunda-feira</option>
+                            <option value="2">Terça-feira</option>
+                            <option value="3">Quarta-feira</option>
+                            <option value="4">Quinta-feira</option>
+                            <option value="5">Sexta-feira</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="item-start-time" class="block text-sm font-medium text-slate-700 mb-1">Horário Início</label>
+                        <input type="time" id="item-start-time" step="1800" class="w-full p-2 border border-slate-300 rounded-lg">
+                    </div>
+                     <div>
+                        <label for="item-end-time" class="block text-sm font-medium text-slate-700 mb-1">Horário Fim</label>
+                        <input type="time" id="item-end-time" step="1800" class="w-full p-2 border border-slate-300 rounded-lg">
+                    </div>
+                </div>
+            </div>
 
-            // --- ELEMENTOS DO DOM ---
-            const mainHeader = document.getElementById('mainHeader');
-            const mobileMenuButton = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const menuIconOpen = document.getElementById('menuIconOpen');
-            const menuIconClose = document.getElementById('menuIconClose');
-            const mobileProjectAccordion = document.getElementById('mobileProjectAccordion');
-            const mobileSubmenu = document.getElementById('mobileSubmenu');
-            const sections = document.querySelectorAll('.content-section');
-            const animatedElements = document.querySelectorAll('.animate-on-scroll');
-            const downloadLinks = document.querySelectorAll('.download-link');
-            const downloadModal = document.getElementById('downloadModal');
-            const closeModalButton = document.getElementById('closeModalButton');
-            
-            // --- LÓGICA DO ANO ATUAL NO FOOTER ---
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-            // --- MENU MOBILE ---
-            const toggleMobileMenu = () => {
-                const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-                mobileMenu.classList.toggle('hidden');
-                menuIconOpen.classList.toggle('hidden');
-                menuIconClose.classList.toggle('hidden');
-                mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-            };
-
-            mobileMenuButton.addEventListener('click', toggleMobileMenu);
-            document.querySelectorAll('.nav-link-mobile').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (mobileMenuButton.getAttribute('aria-expanded') === 'true') {
-                        toggleMobileMenu();
-                    }
-                });
-            });
-            
-            // Lógica do Acordeão Mobile
-            mobileProjectAccordion.addEventListener('click', () => {
-                const isExpanded = mobileProjectAccordion.getAttribute('aria-expanded') === 'true';
-                mobileProjectAccordion.setAttribute('aria-expanded', !isExpanded);
-                mobileProjectAccordion.querySelector('svg').classList.toggle('rotate-180');
-                if (isExpanded) {
-                    mobileSubmenu.style.maxHeight = '0';
-                } else {
-                    mobileSubmenu.style.maxHeight = mobileSubmenu.scrollHeight + "px";
-                }
-            });
+            <div class="mt-8 flex justify-end gap-4">
+                <button type="button" id="modal-cancel-btn" class="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors">Cancelar</button>
+                <button type="submit" id="modal-save-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Salvar</button>
+            </div>
+        </form>
+    </dialog>
 
 
-            // --- HEADER COM SCROLL ---
-            const handleHeaderScroll = () => {
-                if (window.scrollY > 50) {
-                    mainHeader.classList.add('header-scrolled');
-                } else {
-                    mainHeader.classList.remove('header-scrolled');
-                }
-            };
-            window.addEventListener('scroll', handleHeaderScroll, { passive: true });
-            
-            // --- NAVEGAÇÃO ATIVA COM INTERSECTION OBSERVER ---
-            const projectSectionsIds = ['situacao', 'platos', 'implantacao', 'dimensionamento', 'paisagismo', 'perspectivas'];
-            const navObserver = new IntersectionObserver((entries) => {
-                let activeId = null;
-                const visibleEntry = entries.find(e => e.isIntersecting);
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
-                if (visibleEntry) {
-                    activeId = visibleEntry.target.getAttribute('id');
-                }
+    // --- GESTÃO DE ESTADO ---
+    let appState = {
+        subjects: [],
+        schedule: []
+    };
+    
+    const courseDetails = {
+        arq: { name: 'Arquitetura', color: 'sky', textColor: 'text-sky-800', bgColor: 'bg-sky-200', borderColor: 'border-sky-300', progressColor: 'bg-sky-500' },
+        eng: { name: 'Engenharia Civil', color: 'teal', textColor: 'text-teal-800', bgColor: 'bg-teal-200', borderColor: 'border-teal-300', progressColor: 'bg-teal-500' },
+        personal: { name: 'Pessoal / Estudo', color: 'amber', textColor: 'text-amber-800', bgColor: 'bg-amber-200', borderColor: 'border-amber-300', progressColor: 'bg-amber-500' }
+    };
+    
+    // Dados padrão completos
+    const defaultSubjects = [
+        { id: 'proj-vertical', name: 'Projeto de Edifício Vertical', course: 'arq', score: 85 },
+        { id: 'proj-metalicas', name: 'Projeto em Estruturas Metálicas', course: 'arq', score: 65 },
+        { id: 'plan-urbano', name: 'Planeamento Urbano e Regional', course: 'arq', score: 50 },
+        { id: 'estagio', name: 'Estágio Obrigatório', course: 'arq', score: 100 },
+        { id: 'teoria-arq', name: 'Teoria da Arquitetura', course: 'arq', score: 75 },
+        { id: 'gestao-redes', name: 'Gestão de Redes e Mídias Sociais', course: 'arq', score: 90 },
+        { id: 'mec-solos', name: 'Mecânica dos Solos Aplicada', course: 'eng', score: 70 },
+        { id: 'mec-solidos', name: 'Mecânica dos Sólidos II', course: 'eng', score: 55 },
+        { id: 'materiais-const', name: 'Materiais de Construção Civil I', course: 'eng', score: 80 },
+        { id: 'calculo-3', name: 'Cálculo Aplicado III', course: 'eng', score: 95 },
+        { id: 'geotecnia', name: 'Geotecnia', course: 'eng', score: 40 },
+        { id: 'quimica', name: 'Química', course: 'eng', score: 88 },
+        { id: 'estatistica', name: 'Estatística', course: 'eng', score: 60 },
+        { id: 'negociacao', name: 'Negociação e Tomada de Decisão', course: 'eng', score: 98 },
+    ];
 
-                document.querySelectorAll('.nav-link, .nav-link-dropdown').forEach(link => link.classList.remove('nav-link-active'));
+    const defaultSchedule = [
+        // Arquitetura
+        { id: 'proj-vertical-sch', linkedId: 'proj-vertical', day: 2, start: 8, span: 5, time: '13:30-18:00' },
+        { id: 'proj-metalicas-sch', linkedId: 'proj-metalicas', day: 3, start: 8, span: 4, time: '13:30-17:00' },
+        { id: 'plan-urbano-sch', linkedId: 'plan-urbano', day: 1, start: 8, span: 4, time: '13:30-17:00' },
+        { id: 'estagio-sch', linkedId: 'estagio', day: 3, start: 12, span: 2, time: '17:10-18:50' },
+        { id: 'teoria-arq-sch', linkedId: 'teoria-arq', day: 4, start: 12, span: 2, time: '17:10-18:50' },
+        { id: 'gestao-redes-sch', linkedId: 'gestao-redes', day: 5, start: 14, span: 2, time: '19:00-20:40' },
+        // Engenharia
+        { id: 'mec-solos-sch', linkedId: 'mec-solos', day: 5, start: 3, span: 4, time: '08:50-12:20' },
+        { id: 'mec-solidos-sch', linkedId: 'mec-solidos', day: 3, start: 2, span: 3, time: '07:50-10:30' },
+        { id: 'materiais-const-sch', linkedId: 'materiais-const', day: 1, start: 3, span: 4, time: '08:50-12:20' },
+        { id: 'calculo-3-sch1', linkedId: 'calculo-3', day: 2, start: 3, span: 2, time: '08:50-10:30' },
+        { id: 'calculo-3-sch2', linkedId: 'calculo-3', day: 4, start: 3, span: 2, time: '08:50-10:30' },
+        { id: 'geotecnia-sch', linkedId: 'geotecnia', day: 1, start: 12, span: 2, time: '17:10-18:50' },
+        { id: 'quimica-sch', linkedId: 'quimica', day: 3, start: 15, span: 2, time: '20:50-22:30' },
+        { id: 'estatistica-sch', linkedId: 'estatistica', day: 5, start: 12, span: 2, time: '17:10-18:50' },
+        { id: 'negociacao-sch', linkedId: 'negociacao', day: 2, start: 14, span: 2, time: '19:00-20:40' },
+    ];
 
-                if (projectSectionsIds.includes(activeId)) {
-                    document.querySelector('.nav-link-dropdown')?.classList.add('nav-link-active');
-                } else if (activeId) {
-                    const directLink = document.querySelector(`.nav-link[href="#${activeId}"]`);
-                    if (directLink) {
-                        directLink.classList.add('nav-link-active');
-                    }
-                }
 
-            }, { rootMargin: '-40% 0px -55% 0px' });
+    // --- ELEMENTOS DO DOM ---
+    const scheduleGrid = document.getElementById('schedule-grid');
+    const gradeCardsContainer = document.getElementById('grade-cards-container');
+    const itemModal = document.getElementById('item-modal');
+    const itemForm = document.getElementById('item-form');
+    const modalTitle = document.getElementById('modal-title');
+    const scheduleFields = document.getElementById('schedule-fields');
 
-            sections.forEach(section => {
-                if (section) navObserver.observe(section);
-            });
-            
-            // --- ANIMAÇÕES DE SCROLL COM INTERSECTION OBSERVER ---
-            const scrollObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const delay = entry.target.style.getPropertyValue('--delay');
-                        setTimeout(() => {
-                           entry.target.classList.add('is-visible');
-                        }, delay ? parseInt(delay) : 0);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
 
-            animatedElements.forEach(el => {
-                scrollObserver.observe(el);
-            });
-            
-            // --- MODAL DE DOWNLOAD (EXEMPLO) ---
-            const openModal = () => downloadModal.classList.remove('hidden');
-            const closeModal = () => downloadModal.classList.add('hidden');
-            
-            downloadLinks.forEach(link => link.addEventListener('click', openModal));
-            closeModalButton.addEventListener('click', closeModal);
-            downloadModal.addEventListener('click', (e) => {
-                 if (e.target === downloadModal) closeModal();
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === "Escape" && !downloadModal.classList.contains('hidden')) {
-                    closeModal();
-                }
-            });
+    // --- PERSISTÊNCIA DE DADOS ---
+    function saveState() {
+        localStorage.setItem('academicAppState', JSON.stringify(appState));
+    }
 
+    function loadState() {
+        const savedState = localStorage.getItem('academicAppState');
+        if (savedState) {
+            appState = JSON.parse(savedState);
+        } else {
+            appState.subjects = defaultSubjects;
+            appState.schedule = defaultSchedule;
+        }
+    }
+
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO ---
+    function renderSchedule() {
+        scheduleGrid.innerHTML = ''; 
+        const headerCells = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+        scheduleGrid.insertAdjacentHTML('beforeend', '<div></div>');
+        headerCells.forEach(day => {
+            scheduleGrid.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-slate-700 py-2 text-sm sm:text-base">${day}</div>`);
         });
-    </script>
+
+        for (let i = 7; i <= 22; i++) {
+            scheduleGrid.insertAdjacentHTML('beforeend', `<div class="text-right text-xs text-slate-400 pr-2 sm:pr-4 -mt-2" style="grid-row: ${i - 5};">${i}:00</div>`);
+            for (let j = 1; j <= 5; j++) {
+                scheduleGrid.insertAdjacentHTML('beforeend', `<div class="border-t border-slate-200" style="grid-column: ${j + 1}; grid-row: ${i - 5};"></div>`);
+            }
+        }
+
+        appState.schedule.forEach(item => {
+            const subjectId = item.linkedId || item.id;
+            const subject = appState.subjects.find(s => s.id === subjectId);
+            if (!subject) return;
+
+            const details = courseDetails[subject.course];
+            const itemDiv = document.createElement('div');
+            itemDiv.className = `schedule-item p-2 rounded-lg border ${details.bgColor} ${details.borderColor} ${details.textColor} flex flex-col justify-between relative`;
+            itemDiv.style.gridColumn = `${item.day + 1}`;
+            itemDiv.style.gridRow = `${item.start} / span ${item.span}`;
+            
+            itemDiv.innerHTML = `
+                <div>
+                    <p class="font-semibold text-xs sm:text-sm">${subject.name}</p>
+                    <p class="text-xs opacity-80 mt-1">${item.time}</p>
+                </div>
+                <button data-id="${item.id}" class="delete-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-700">&times;</button>
+            `;
+            scheduleGrid.appendChild(itemDiv);
+        });
+    }
+
+    function renderGradeCards() {
+        gradeCardsContainer.innerHTML = '';
+        if (appState.subjects.length === 0) {
+            gradeCardsContainer.innerHTML = `<p class="text-slate-500 md:col-span-2 lg:col-span-3 text-center py-8">Nenhuma matéria adicionada. Clique em "Adicionar Matéria" para começar.</p>`;
+            return;
+        }
+        
+        appState.subjects.forEach(subject => {
+            const details = courseDetails[subject.course];
+            const card = document.createElement('div');
+            card.className = "bg-white p-5 rounded-2xl shadow-lg flex flex-col";
+            
+            card.innerHTML = `
+                <div class="flex-grow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">${details.name}</p>
+                            <h3 class="font-bold text-lg text-slate-800">${subject.name}</h3>
+                        </div>
+                        <button data-id="${subject.id}" class="delete-subject-btn text-xl text-red-400 hover:text-red-600 font-bold transition-colors">&times;</button>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium ${details.textColor}">Progresso</span>
+                            <span class="text-sm font-medium ${details.textColor}">${subject.score} / 100</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5">
+                            <div class="h-2.5 rounded-full ${details.progressColor}" style="width: ${subject.score}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="mt-6 flex gap-2" data-id="${subject.id}">
+                    <input type="number" placeholder="Pontos" min="0" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-${details.color}-400 focus:border-${details.color}-400 transition">
+                    <button type="submit" class="bg-${details.color}-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-${details.color}-600 transition-colors">
+                        Adicionar
+                    </button>
+                </form>
+            `;
+            gradeCardsContainer.appendChild(card);
+        });
+    }
+    
+    function renderApp() {
+        renderSchedule();
+        renderGradeCards();
+    }
+
+
+    // --- HANDLERS DE EVENTOS & LÓGICA ---
+    function openModal(type, data = {}) {
+        itemForm.reset();
+        const isEditing = !!data.id;
+        document.getElementById('item-id').value = data.id || '';
+        
+        if (type === 'subject') {
+            modalTitle.textContent = isEditing ? 'Editar Matéria' : 'Adicionar Matéria';
+            scheduleFields.style.display = 'none';
+            if(isEditing) {
+                 const subject = appState.subjects.find(s => s.id === data.id);
+                 document.getElementById('item-name').value = subject.name;
+                 document.getElementById('item-course').value = subject.course;
+            }
+        } else {
+            modalTitle.textContent = 'Adicionar ao Horário';
+            scheduleFields.style.display = 'block';
+        }
+
+        itemModal.showModal();
+    }
+    
+    function timeToRow(timeStr) {
+        if (!timeStr) return 0;
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return (hours - 7) * 2 + (minutes / 30) + 2;
+    }
+
+    function resetAllScores() {
+        if (confirm('Tem a certeza que deseja reiniciar o progresso de TODAS as matérias? Esta ação não pode ser desfeita.')) {
+            appState.subjects.forEach(subject => {
+                subject.score = 0;
+            });
+            saveState();
+            renderApp();
+        }
+    }
+
+    itemForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('item-id').value || `subj-${Date.now()}`;
+        const name = document.getElementById('item-name').value;
+        const course = document.getElementById('item-course').value;
+        const startTime = document.getElementById('item-start-time').value;
+        const endTime = document.getElementById('item-end-time').value;
+
+        const existingSubjectIndex = appState.subjects.findIndex(s => s.id === id);
+        if (existingSubjectIndex > -1) {
+            appState.subjects[existingSubjectIndex] = { ...appState.subjects[existingSubjectIndex], name, course };
+        } else {
+            appState.subjects.push({ id, name, course, score: 0 });
+        }
+        
+        if (scheduleFields.style.display !== 'none' && startTime && endTime) {
+            const startRow = timeToRow(startTime);
+            const endRow = timeToRow(endTime);
+            if (endRow > startRow) {
+                appState.schedule.push({
+                    id: `sch-${Date.now()}`,
+                    linkedId: id,
+                    day: parseInt(document.getElementById('item-day').value),
+                    start: startRow,
+                    span: endRow - startRow,
+                    time: `${startTime}-${endTime}`
+                });
+            }
+        }
+        
+        saveState();
+        renderApp();
+        itemModal.close();
+    });
+
+    gradeCardsContainer.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (e.target.tagName === 'FORM') {
+            const subjectId = e.target.dataset.id;
+            const input = e.target.querySelector('input[type="number"]');
+            const points = parseFloat(input.value);
+
+            if (!isNaN(points) && points > 0) {
+                const subject = appState.subjects.find(s => s.id === subjectId);
+                if (subject) {
+                    subject.score = Math.min(100, subject.score + points);
+                    saveState();
+                    renderApp();
+                }
+            }
+            input.value = '';
+        }
+    });
+
+    document.body.addEventListener('click', (e) => {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        if (target.matches('.delete-btn')) {
+            const scheduleId = target.dataset.id;
+            if (confirm('Tem a certeza que deseja remover este item do horário?')) {
+                appState.schedule = appState.schedule.filter(item => item.id !== scheduleId);
+                saveState();
+                renderApp();
+            }
+        }
+        if (target.matches('.delete-subject-btn')) {
+            const subjectId = target.dataset.id;
+             if (confirm('Tem a certeza que deseja remover esta matéria? Isto também removerá todos os seus horários agendados.')) {
+                appState.subjects = appState.subjects.filter(s => s.id !== subjectId);
+                appState.schedule = appState.schedule.filter(item => (item.linkedId) !== subjectId);
+                saveState();
+                renderApp();
+            }
+        }
+    });
+
+    document.getElementById('add-subject-btn').addEventListener('click', () => openModal('subject'));
+    document.getElementById('add-schedule-item-btn').addEventListener('click', () => openModal('schedule'));
+    document.getElementById('modal-cancel-btn').addEventListener('click', () => itemModal.close());
+    document.getElementById('reset-progress-btn').addEventListener('click', resetAllScores);
+
+
+    // --- INICIALIZAÇÃO ---
+    loadState();
+    renderApp();
+});
+</script>
+
 </body>
 </html>

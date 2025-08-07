@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quadro de Horários Interativo com Notas</title>
+    <title>Quadro de Horários - Estilo Notion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
         
         dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
         
@@ -25,71 +25,83 @@
             opacity: 1;
         }
 
-        /* Chave para o novo layout: posicionamento absoluto dentro de colunas relativas */
         .schedule-item {
             position: absolute;
-            /* Deixa uma pequena margem para não colar nas bordas */
             width: calc(100% - 4px);
             left: 2px;
             box-sizing: border-box;
+            transition: background-color 0.2s ease;
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 p-4 sm:p-6 md:p-8">
+<body class="bg-gray-50 text-gray-800">
 
-    <div class="max-w-7xl mx-auto">
-        <!-- Cabeçalho -->
-        <header class="mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Horário Académico Interativo</h1>
-            <p class="text-slate-500 mt-1">Grelha unificada com controlo de notas persistente. Adicione, edite e remova itens.</p>
-            <div class="flex flex-wrap gap-4 mt-4">
-                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-sky-200 border border-sky-300"></span><span class="text-sm font-medium">Arquitetura e Urbanismo</span></div>
-                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-teal-200 border border-teal-300"></span><span class="text-sm font-medium">Engenharia Civil</span></div>
-                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-amber-200 border border-amber-300"></span><span class="text-sm font-medium">Pessoal / Estudo</span></div>
+    <div class="flex h-screen">
+        <!-- Barra Lateral de Navegação -->
+        <nav class="w-72 bg-white border-r border-gray-200 p-6 flex flex-col h-full">
+            <h1 class="text-xl font-bold text-gray-900">Painel Académico</h1>
+            <p class="text-sm text-gray-500 mt-1">Gestão de Horários e Notas</p>
+            
+            <div class="mt-8 space-y-2">
+                <button id="add-subject-btn" class="w-full text-left bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                    Adicionar Matéria
+                </button>
+                <button id="add-schedule-item-btn" class="w-full text-left bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors border border-gray-300 flex items-center gap-3">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/><path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/></svg>
+                    Adicionar ao Horário
+                </button>
             </div>
-        </header>
 
-        <!-- Grelha Principal de Horários -->
-        <div class="bg-white p-4 rounded-2xl shadow-lg relative">
-            <div id="schedule-grid" class="grid grid-cols-[auto_repeat(5,_1fr)] gap-1 sm:gap-2">
-                <!-- Conteúdo da grelha será gerado por JS -->
-            </div>
-            <button id="add-schedule-item-btn" class="absolute top-4 right-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-md">
-                + Adicionar ao Horário
-            </button>
-        </div>
-
-        <!-- Secção de Controlo de Notas -->
-        <section id="grade-tracker" class="mt-8">
-            <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-slate-900">Controlo de Notas</h2>
-                <div class="flex gap-4">
-                    <button id="reset-progress-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-md">
-                        Reiniciar Progresso
-                    </button>
-                    <button id="add-subject-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-md">
-                        + Adicionar Matéria
-                    </button>
+            <div class="mt-10 pt-6 border-t border-gray-200 overflow-y-auto flex-grow">
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Matérias</h2>
+                <div id="subjects-nav-list" class="space-y-1">
+                    <!-- Lista de matérias será injetada aqui -->
                 </div>
             </div>
-            <div id="grade-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Cartões de notas serão injetados aqui pelo JavaScript -->
+
+            <div class="mt-auto pt-6 border-t border-gray-200">
+                 <button id="reset-progress-btn" class="w-full text-left bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+                    Reiniciar Progresso
+                </button>
             </div>
-        </section>
+        </nav>
+
+        <!-- Área de Conteúdo Principal -->
+        <main class="flex-1 p-6 sm:p-8 md:p-10 overflow-y-auto">
+            <!-- Grelha Principal de Horários -->
+            <section id="schedule-section">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Horário da Semana</h2>
+                <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm relative">
+                    <div id="schedule-grid" class="grid grid-cols-[auto_repeat(5,_1fr)] gap-1 sm:gap-2">
+                        <!-- Conteúdo da grelha será gerado por JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Secção de Controlo de Notas -->
+            <section id="grade-tracker" class="mt-12">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Controlo de Notas</h2>
+                <div id="grade-cards-container" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Cartões de notas serão injetados aqui -->
+                </div>
+            </section>
+        </main>
     </div>
 
-    <!-- Modal para adicionar/editar Matérias e Itens de Horário -->
-    <dialog id="item-modal" class="p-6 bg-white rounded-2xl shadow-xl w-full max-w-md">
-        <h3 id="modal-title" class="text-2xl font-bold text-slate-900 mb-6">Adicionar Novo Item</h3>
+    <!-- Modal -->
+    <dialog id="item-modal" class="p-6 bg-white rounded-lg shadow-xl w-full max-w-md">
+        <h3 id="modal-title" class="text-xl font-bold text-gray-900 mb-6">Adicionar Novo Item</h3>
         <form id="item-form">
             <input type="hidden" id="item-id">
             <div class="mb-4">
-                <label for="item-name" class="block text-sm font-medium text-slate-700 mb-1">Nome da Matéria / Tarefa</label>
-                <input type="text" id="item-name" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400" required>
+                <label for="item-name" class="block text-sm font-medium text-gray-700 mb-1">Nome da Matéria / Tarefa</label>
+                <input type="text" id="item-name" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
-                <label for="item-course" class="block text-sm font-medium text-slate-700 mb-1">Tipo / Curso</label>
-                <select id="item-course" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400">
+                <label for="item-course" class="block text-sm font-medium text-gray-700 mb-1">Tipo / Curso</label>
+                <select id="item-course" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
                     <option value="arq">Arquitetura e Urbanismo</option>
                     <option value="eng">Engenharia Civil</option>
                     <option value="personal">Pessoal / Estudo</option>
@@ -97,11 +109,11 @@
             </div>
             
             <div id="schedule-fields" class="border-t pt-4 mt-4">
-                 <p class="text-sm font-medium text-slate-600 mb-2">Detalhes do Horário (Opcional)</p>
+                 <p class="text-sm font-medium text-gray-600 mb-2">Detalhes do Horário (Opcional)</p>
                  <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label for="item-day" class="block text-sm font-medium text-slate-700 mb-1">Dia</label>
-                        <select id="item-day" class="w-full p-2 border border-slate-300 rounded-lg">
+                        <label for="item-day" class="block text-sm font-medium text-gray-700 mb-1">Dia</label>
+                        <select id="item-day" class="w-full p-2 border border-gray-300 rounded-md">
                             <option value="1">Segunda-feira</option>
                             <option value="2">Terça-feira</option>
                             <option value="3">Quarta-feira</option>
@@ -110,19 +122,19 @@
                         </select>
                     </div>
                      <div>
-                        <label for="item-start-time" class="block text-sm font-medium text-slate-700 mb-1">Horário Início</label>
-                        <input type="time" id="item-start-time" step="1800" class="w-full p-2 border border-slate-300 rounded-lg">
+                        <label for="item-start-time" class="block text-sm font-medium text-gray-700 mb-1">Horário Início</label>
+                        <input type="time" id="item-start-time" step="1800" class="w-full p-2 border border-gray-300 rounded-md">
                     </div>
                      <div>
-                        <label for="item-end-time" class="block text-sm font-medium text-slate-700 mb-1">Horário Fim</label>
-                        <input type="time" id="item-end-time" step="1800" class="w-full p-2 border border-slate-300 rounded-lg">
+                        <label for="item-end-time" class="block text-sm font-medium text-gray-700 mb-1">Horário Fim</label>
+                        <input type="time" id="item-end-time" step="1800" class="w-full p-2 border border-gray-300 rounded-md">
                     </div>
                 </div>
             </div>
 
             <div class="mt-8 flex justify-end gap-4">
-                <button type="button" id="modal-cancel-btn" class="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors">Cancelar</button>
-                <button type="submit" id="modal-save-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Salvar</button>
+                <button type="button" id="modal-cancel-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Cancelar</button>
+                <button type="submit" id="modal-save-btn" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-900 transition-colors">Salvar</button>
             </div>
         </form>
     </dialog>
@@ -137,10 +149,11 @@ document.addEventListener('DOMContentLoaded', () => {
         schedule: []
     };
     
+    // Paleta de cores inspirada no Notion
     const courseDetails = {
-        arq: { name: 'Arquitetura', color: 'sky', textColor: 'text-sky-800', bgColor: 'bg-sky-200', borderColor: 'border-sky-300', progressColor: 'bg-sky-500' },
-        eng: { name: 'Engenharia Civil', color: 'teal', textColor: 'text-teal-800', bgColor: 'bg-teal-200', borderColor: 'border-teal-300', progressColor: 'bg-teal-500' },
-        personal: { name: 'Pessoal / Estudo', color: 'amber', textColor: 'text-amber-800', bgColor: 'bg-amber-200', borderColor: 'border-amber-300', progressColor: 'bg-amber-500' }
+        arq: { name: 'Arquitetura', color: 'blue', textColor: 'text-blue-800', bgColor: 'bg-blue-50', progressColor: 'bg-blue-400' },
+        eng: { name: 'Engenharia Civil', color: 'green', textColor: 'text-green-800', bgColor: 'bg-green-50', progressColor: 'bg-green-400' },
+        personal: { name: 'Pessoal / Estudo', color: 'yellow', textColor: 'text-yellow-800', bgColor: 'bg-yellow-50', progressColor: 'bg-yellow-400' }
     };
     
     // Dados padrão
@@ -175,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENTOS DO DOM ---
     const scheduleGrid = document.getElementById('schedule-grid');
     const gradeCardsContainer = document.getElementById('grade-cards-container');
+    const subjectsNavList = document.getElementById('subjects-nav-list');
     const itemModal = document.getElementById('item-modal');
     const itemForm = document.getElementById('item-form');
     const modalTitle = document.getElementById('modal-title');
@@ -198,23 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- FUNÇÕES DE RENDERIZAÇÃO ---
-    
-    /**
-     * **LÓGICA DE LAYOUT ATUALIZADA**
-     * Renderiza a grelha de horários, calculando dinamicamente a posição e largura dos eventos para evitar sobreposição.
-     * Alinha perfeitamente os eventos com as linhas de tempo.
-     */
     function renderSchedule() {
         scheduleGrid.innerHTML = ''; 
         
-        // 1. Renderiza Cabeçalho
         const headerCells = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-        scheduleGrid.insertAdjacentHTML('beforeend', '<div></div>'); // Canto
+        scheduleGrid.insertAdjacentHTML('beforeend', '<div></div>');
         headerCells.forEach(day => {
-            scheduleGrid.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-slate-700 py-2 text-sm sm:text-base">${day}</div>`);
+            scheduleGrid.insertAdjacentHTML('beforeend', `<div class="text-center font-semibold text-gray-600 py-2 text-sm">${day}</div>`);
         });
 
-        // 2. Renderiza a Coluna de Horas com alinhamento preciso
         const timeColumn = document.createElement('div');
         timeColumn.style.gridRow = '2 / span 1';
         timeColumn.style.gridColumn = '1 / span 1';
@@ -222,31 +228,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         for (let i = 7; i <= 22; i++) {
             const hourLabel = document.createElement('div');
-            hourLabel.className = 'text-right text-xs text-slate-400 pr-2 sm:pr-4 absolute w-full';
-            // Posiciona o rótulo. (i - 7) * 50px é a posição da linha. -7px é para centrar o texto na linha.
+            hourLabel.className = 'text-right text-xs text-gray-400 pr-2 sm:pr-4 absolute w-full';
             hourLabel.style.top = `${(i - 7) * 50 - 7}px`; 
             hourLabel.textContent = `${i}:00`;
             timeColumn.appendChild(hourLabel);
         }
         scheduleGrid.appendChild(timeColumn);
 
-        // 3. Cria as colunas dos dias e as linhas de fundo
         const dayColumns = [];
         for (let i = 1; i <= 5; i++) {
             const dayColumn = document.createElement('div');
-            dayColumn.className = 'relative'; // O contentor para os eventos
+            dayColumn.className = 'relative';
             dayColumn.style.gridColumn = i + 1;
             dayColumn.style.gridRow = '2 / span 1';
             
-            // Adiciona linhas de fundo para cada hora
             for (let j = 7; j < 22; j++) {
-                dayColumn.insertAdjacentHTML('beforeend', `<div class="h-[50px] border-b border-slate-200"></div>`);
+                dayColumn.insertAdjacentHTML('beforeend', `<div class="h-[50px] border-b border-gray-100"></div>`);
             }
             scheduleGrid.appendChild(dayColumn);
             dayColumns.push(dayColumn);
         }
 
-        // 4. Processa e posiciona os eventos para cada dia
         for (let day = 1; day <= 5; day++) {
             const itemsToday = appState.schedule
                 .filter(item => item.day === day)
@@ -301,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const width = 100 / totalCols;
                     const left = item.colIndex * width;
 
-                    itemDiv.className = `schedule-item p-2 rounded-lg border ${details.bgColor} ${details.borderColor} ${details.textColor} flex flex-col justify-between z-10`;
+                    itemDiv.className = `schedule-item p-2 rounded-md ${details.bgColor} ${details.textColor} flex flex-col justify-between z-10`;
                     itemDiv.style.top = `${top}px`;
                     itemDiv.style.height = `${height}px`;
                     itemDiv.style.width = `calc(${width}% - 4px)`;
@@ -312,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="font-semibold text-xs sm:text-sm">${subject.name}</p>
                             <p class="text-xs opacity-80 mt-1">${item.time}</p>
                         </div>
-                        <button data-id="${item.id}" class="delete-btn absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-700">&times;</button>
+                        <button data-id="${item.id}" class="delete-btn absolute top-1 right-1 bg-black/20 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold hover:bg-black/40">&times;</button>
                     `;
                     dayColumns[day - 1].appendChild(itemDiv);
                 }
@@ -320,27 +322,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     function renderGradeCards() {
         gradeCardsContainer.innerHTML = '';
         if (appState.subjects.length === 0) {
-            gradeCardsContainer.innerHTML = `<p class="text-slate-500 md:col-span-2 lg:col-span-3 text-center py-8">Nenhuma matéria adicionada. Clique em "Adicionar Matéria" para começar.</p>`;
+            gradeCardsContainer.innerHTML = `<p class="text-gray-500 lg:col-span-2 xl:col-span-3 text-center py-8">Nenhuma matéria adicionada.</p>`;
             return;
         }
         
         appState.subjects.forEach(subject => {
             const details = courseDetails[subject.course];
             const card = document.createElement('div');
-            card.className = "bg-white p-5 rounded-2xl shadow-lg flex flex-col";
+            card.id = `card-${subject.id}`;
+            card.className = "bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col";
             
             card.innerHTML = `
                 <div class="flex-grow">
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-sm font-medium text-slate-500">${details.name}</p>
-                            <h3 class="font-bold text-lg text-slate-800">${subject.name}</h3>
+                            <p class="text-sm font-medium text-gray-500">${details.name}</p>
+                            <h3 class="font-bold text-lg text-gray-800">${subject.name}</h3>
                         </div>
-                        <button data-id="${subject.id}" class="delete-subject-btn text-xl text-red-400 hover:text-red-600 font-bold transition-colors">&times;</button>
+                        <button data-id="${subject.id}" class="delete-subject-btn text-xl text-gray-400 hover:text-red-500 font-bold transition-colors">&times;</button>
                     </div>
                     
                     <div class="mt-4">
@@ -348,15 +350,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="text-sm font-medium ${details.textColor}">Progresso</span>
                             <span class="text-sm font-medium ${details.textColor}">${subject.score} / 100</span>
                         </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5">
-                            <div class="h-2.5 rounded-full ${details.progressColor}" style="width: ${subject.score}%"></div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="h-2 rounded-full ${details.progressColor}" style="width: ${subject.score}%"></div>
                         </div>
                     </div>
                 </div>
 
                 <form class="mt-6 flex gap-2" data-id="${subject.id}">
-                    <input type="number" placeholder="Pontos" min="0" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-${details.color}-400 focus:border-${details.color}-400 transition">
-                    <button type="submit" class="bg-${details.color}-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-${details.color}-600 transition-colors">
+                    <input type="number" placeholder="Pontos" min="0" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition">
+                    <button type="submit" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 transition-colors">
                         Adicionar
                     </button>
                 </form>
@@ -364,10 +366,26 @@ document.addEventListener('DOMContentLoaded', () => {
             gradeCardsContainer.appendChild(card);
         });
     }
+
+    function renderSubjectsNav() {
+        subjectsNavList.innerHTML = '';
+        appState.subjects.forEach(subject => {
+            const details = courseDetails[subject.course];
+            const navItem = document.createElement('a');
+            navItem.href = `#card-${subject.id}`;
+            navItem.className = `w-full text-left font-medium text-gray-600 hover:bg-gray-100 py-1.5 px-3 rounded-md flex items-center gap-3 text-sm`;
+            navItem.innerHTML = `
+                <span class="w-2 h-2 rounded-full ${details.progressColor}"></span>
+                ${subject.name}
+            `;
+            subjectsNavList.appendChild(navItem);
+        });
+    }
     
     function renderApp() {
         renderSchedule();
         renderGradeCards();
+        renderSubjectsNav();
     }
 
 

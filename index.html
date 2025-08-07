@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quadro de Horários - Estilo Notion</title>
+    <title>Quadro de Horários</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -212,6 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- FUNÇÕES DE RENDERIZAÇÃO ---
+    
+    /**
+     * **LÓGICA DE LAYOUT CORRIGIDA**
+     * Renderiza a grelha de horários com alinhamento vertical preciso.
+     */
     function renderSchedule() {
         scheduleGrid.innerHTML = ''; 
         
@@ -226,6 +231,12 @@ document.addEventListener('DOMContentLoaded', () => {
         timeColumn.style.gridColumn = '1 / span 1';
         timeColumn.className = 'relative';
         
+        // Adiciona estrutura de fundo para garantir altura consistente
+        for (let j = 7; j < 22; j++) {
+            timeColumn.insertAdjacentHTML('beforeend', `<div class="h-[50px]"></div>`);
+        }
+
+        // Adiciona os rótulos de tempo por cima da estrutura
         for (let i = 7; i <= 22; i++) {
             const hourLabel = document.createElement('div');
             hourLabel.className = 'text-right text-xs text-gray-400 pr-2 sm:pr-4 absolute w-full';
